@@ -2,7 +2,7 @@
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Rubik:wght@500;700&family=Assistant:wght@400;600;700&display=swap">
 <style>
-/* Layout: one RTL column, decisions as stacked panels; route ranking re-sorts live from weight sliders */
+/* Layout: one RTL column. Each person votes separately; agreement, plan and budget are computed live in the page */
 :root{
   --bg:#f3f7f7; --surface:#ffffff; --ink:#12313a; --muted:#5b7279; --line:#d6e3e4;
   --sea:#0d7a83; --sea-soft:#dff0f1; --orchid:#a8336f; --orchid-soft:#f7e3ee;
@@ -20,28 +20,26 @@
 *{box-sizing:border-box}
 body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.55;direction:rtl;
   padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:20px 60px}
-.wrap{max-width:860px;margin:0 auto;display:flex;flex-direction:column;gap:22px}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--bg)}
+.wrap{max-width:880px;margin:0 auto;display:flex;flex-direction:column;gap:24px}
 h1,h2,h3{font-family:var(--display);text-wrap:balance;margin:0}
-h1{font-size:1.75rem}
-h2{font-size:1.25rem}
-h3{font-size:1.05rem}
+h1{font-size:1.75rem} h2{font-size:1.25rem} h3{font-size:1.05rem}
 p{margin:0}
-.muted{color:var(--muted)}
-.small{font-size:.88rem}
+.muted{color:var(--muted)} .small{font-size:.88rem}
 header{display:flex;flex-direction:column;gap:8px}
-.facts{display:flex;flex-wrap:wrap;gap:6px}
+.row{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
 .chip{display:inline-flex;align-items:center;gap:4px;padding:2px 10px;border-radius:999px;background:var(--sea-soft);color:var(--ink);font-size:.85rem;white-space:nowrap}
 .chip.rec{background:var(--orchid);color:#fff;font-weight:700}
 .chip.warn{background:transparent;border:1px solid var(--warn);color:var(--warn)}
-.status{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--bg);padding-block:8px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;align-items:center}
-body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--bg)}
-.progress{display:flex;gap:6px;align-items:center;font-variant-numeric:tabular-nums}
-.dots{display:flex;gap:4px}
-.dot{width:10px;height:10px;border-radius:50%;background:var(--line)}
-.dot.on{background:var(--sea)}
-#saveState{font-size:.85rem;color:var(--muted)}
+.chip.ok{background:transparent;border:1px solid var(--good);color:var(--good)}
+.chip.bad{background:transparent;border:1px solid var(--bad);color:var(--bad)}
+.who{display:inline-flex;align-items:center;gap:4px;font-size:.8rem;padding:1px 8px 1px 4px;border-radius:999px;border:1px solid var(--line);background:var(--surface)}
+.who i{width:10px;height:10px;border-radius:50%;display:inline-block}
+.status{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--bg);padding-block:8px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;align-items:center;font-size:.9rem}
+#saveState{color:var(--muted)}
 section{display:flex;flex-direction:column;gap:12px}
-.panel{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:16px;display:flex;flex-direction:column;gap:12px}
+.why{font-size:.92rem;color:var(--muted)}
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:16px;display:flex;flex-direction:column;gap:12px;min-width:0}
 .weights{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:10px 18px}
 .w{display:flex;flex-direction:column;gap:2px}
 .w label{display:flex;justify-content:space-between;font-weight:600;font-size:.92rem}
@@ -49,12 +47,12 @@ section{display:flex;flex-direction:column;gap:12px}
 input[type=range]{width:100%;accent-color:var(--sea)}
 .routes{display:flex;flex-direction:column;gap:10px}
 .route{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:14px 16px;display:grid;grid-template-columns:auto 1fr auto;gap:6px 14px;align-items:start;cursor:pointer}
-.route:focus-within{outline:2px solid var(--sea);outline-offset:2px}
+.route:focus-within,.opt:focus-within{outline:2px solid var(--sea);outline-offset:2px}
 .route.chosen{border-color:var(--sea);box-shadow:0 0 0 2px var(--sea) inset}
-.route input{margin-top:5px;accent-color:var(--sea);width:18px;height:18px}
-.route .main{min-width:0;display:flex;flex-direction:column;gap:6px}
+.route input,.opt input{margin-top:5px;accent-color:var(--sea);width:18px;height:18px}
+.main{min-width:0;display:flex;flex-direction:column;gap:6px}
 .legs{display:flex;flex-wrap:wrap;gap:4px;align-items:center;font-size:.92rem}
-.legs .arrow{color:var(--muted)}
+.arrow{color:var(--muted)}
 .score{text-align:center;min-width:64px}
 .score b{font-family:var(--display);font-size:1.5rem;font-variant-numeric:tabular-nums;display:block}
 .bar{height:6px;border-radius:3px;background:var(--line);overflow:hidden;margin-top:4px}
@@ -66,207 +64,264 @@ input[type=range]{width:100%;accent-color:var(--sea)}
 .opts{display:flex;flex-direction:column;gap:8px}
 .opt{display:grid;grid-template-columns:auto 1fr;gap:4px 10px;padding:10px 12px;border:1px solid var(--line);border-radius:10px;cursor:pointer}
 .opt.chosen{border-color:var(--sea);background:var(--sea-soft)}
-.opt input{margin-top:4px;accent-color:var(--sea);width:17px;height:17px}
 .opt .t{display:flex;flex-wrap:wrap;gap:6px;align-items:center;font-weight:700}
-.opt .d{grid-column:2;font-size:.9rem;color:var(--muted)}
+.opt .d,.opt .vv{grid-column:2;font-size:.9rem;color:var(--muted)}
 textarea,input[type=number]{width:100%;font:inherit;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:8px 10px}
 textarea{min-height:60px;resize:vertical}
-textarea:focus,input:focus{outline:2px solid var(--sea);outline-offset:1px}
-a{color:var(--sea)}
-.why{font-size:.92rem;color:var(--muted)}
-.cond{font-size:.85rem;color:var(--warn)}
+textarea:focus,input:focus,button:focus-visible{outline:2px solid var(--sea);outline-offset:1px}
+button{font:inherit;font-weight:700;border:0;border-radius:8px;padding:8px 16px;background:var(--sea);color:#fff;cursor:pointer}
+button.ghost{background:transparent;color:var(--sea);border:1px solid var(--sea)}
+button:disabled{opacity:.5;cursor:default}
+table{width:100%;border-collapse:collapse;font-size:.92rem}
+th,td{text-align:start;padding:7px 6px;border-bottom:1px solid var(--line);vertical-align:top}
+th{font-weight:700;color:var(--muted);font-size:.85rem}
+.tablewrap{overflow-x:auto}
+.leg{display:grid;grid-template-columns:110px 1fr;gap:4px 14px;padding-block:10px;border-bottom:1px solid var(--line)}
+.leg:last-child{border-bottom:0}
+.leg .when{font-variant-numeric:tabular-nums;font-weight:700}
+.leg ul{margin:4px 0 0;padding-inline-start:18px}
+.move{font-size:.85rem;color:var(--muted);padding-block:4px}
+.money{font-family:var(--display);font-size:1.4rem;font-variant-numeric:tabular-nums}
+.qa{display:flex;flex-direction:column;gap:10px}
+.qa .q{font-weight:700}
+.qa .a{white-space:pre-wrap;font-size:.95rem}
+.qa article{border-top:1px solid var(--line);padding-top:10px;display:flex;flex-direction:column;gap:4px}
 footer{font-size:.85rem;color:var(--muted)}
-@media (max-width:560px){.pc{grid-template-columns:1fr}.route{grid-template-columns:auto 1fr}.score{grid-column:2;text-align:start;display:flex;gap:10px;align-items:center}.score .bar{flex:1;margin:0}}
+@media (max-width:560px){.pc{grid-template-columns:1fr}.route{grid-template-columns:auto 1fr}.score{grid-column:2;text-align:start;display:flex;gap:10px;align-items:center}.score .bar{flex:1;margin:0}.leg{grid-template-columns:1fr}}
 @media (prefers-reduced-motion:no-preference){.bar span{transition:width .3s}}
 </style>
 
 <div class="wrap">
   <header>
     <h1>החלטות תאילנד 2027</h1>
-    <p class="muted">בוחרים כאן, אני רואה את הבחירות ומעדכן את התוכנית. בלי שיחה ארוכה.</p>
-    <div class="facts">
-      <span class="chip">✈️ נחיתה 8.8, 12:35</span>
-      <span class="chip">🛫 המראה 25.8, 01:50</span>
-      <span class="chip">16 לילות</span>
-      <span class="chip">שיר 14 · נועם 10 · גלי 6</span>
+    <p class="muted">כל אחד מכם בוחר בנפרד. הלוח מראה במה אתם מסכימים, ומחשב בעצמו את התוכנית והתקציב. אם יש שאלה, אפשר לשאול את Claude מכאן.</p>
+    <div class="row">
+      <span class="chip">✈️ נחיתה 8.8, 12:35</span><span class="chip">🛫 המראה 25.8, 01:50</span>
+      <span class="chip">16 לילות</span><span class="chip">שיר 14 · נועם 10 · גלי 6</span>
       <span class="chip warn">12–15.8 סופ"ש ארוך בתאילנד (יום האם)</span>
     </div>
   </header>
 
-  <div class="status">
-    <div class="progress"><span id="progText">0 מתוך 0 החלטות</span><span class="dots" id="dots"></span></div>
-    <span id="saveState" role="status">מתחבר…</span>
-  </div>
+  <div class="status"><div class="row" id="people"><span class="muted">מי בחר:</span></div><span id="saveState" role="status">מתחבר…</span></div>
+
+  <section aria-labelledby="ag-h">
+    <h2 id="ag-h">איפה אתם עומדים</h2>
+    <div class="panel"><div class="tablewrap"><table id="agree"></table></div></div>
+  </section>
 
   <section aria-labelledby="w-h">
-    <h2 id="w-h">1. מה הכי חשוב לכם?</h2>
-    <p class="why">הזיזו את המשקלות, והדירוג של המסלולים למטה מתעדכן מיד.</p>
+    <h2 id="w-h">1. מה הכי חשוב לך?</h2>
+    <p class="why">המשקלות האלה שלך בלבד. הדירוג של המסלולים למטה מתעדכן לפיהם.</p>
     <div class="panel"><div class="weights" id="weights"></div></div>
   </section>
 
   <section aria-labelledby="r-h">
     <h2 id="r-h">2. בחירת מסלול</h2>
-    <p class="why">הציון הוא 1 עד 5 לכל קריטריון, ומשוקלל לפי מה שבחרתם למעלה.</p>
+    <p class="why">כל קריטריון מקבל ציון בין 1 ל-5, ומשוקלל לפי המשקלות שלך.</p>
     <div class="routes" id="routes"></div>
-    <div class="panel"><label for="note-route" class="small">הערה על המסלול (לא חובה)</label><textarea id="note-route" data-note="route" placeholder="מה חשוב לך שאדע?"></textarea></div>
   </section>
 
   <section aria-labelledby="h-h">
     <h2 id="h-h">3. מלונות ותוספות</h2>
-    <p class="why">מוצגות רק ההחלטות שרלוונטיות למסלול שבחרתם.</p>
+    <p class="why">כאן מופיעות רק ההחלטות שקשורות למסלול שבחרת.</p>
     <div id="decisions" style="display:flex;flex-direction:column;gap:14px"></div>
   </section>
 
-  <section aria-labelledby="m-h">
-    <h2 id="m-h">4. הודעה אליי</h2>
+  <section aria-labelledby="p-h">
+    <h2 id="p-h">4. התוכנית שיוצאת מהבחירות שלך</h2>
+    <div class="panel" id="plan"></div>
+    <div class="panel" id="budget"></div>
+  </section>
+
+  <section aria-labelledby="c-h">
+    <h2 id="c-h">5. לשאול את Claude</h2>
     <div class="panel">
-      <label for="note-claude" class="small">שאלות, רעיונות או דברים לבדוק</label>
-      <textarea id="note-claude" data-note="claude" placeholder="לדוגמה: תבדוק אם יש מלון עם פארק מים בסמוי"></textarea>
-      <p class="small muted">אחרי שבחרת, כתבי לי בצ'אט "עדכנתי", ואני אקרא ואעדכן את התוכנית.</p>
+      <label for="ask" class="small">Claude רואה את הבחירות של שניכם ואת כל האפשרויות בלוח</label>
+      <textarea id="ask" placeholder="לדוגמה: מה ההבדל בפועל בין מסלול ג' למסלול ה' בשבילנו?"></textarea>
+      <div class="row"><button id="askBtn" type="button">לשאול</button><button id="stopBtn" type="button" class="ghost" hidden>לעצור</button><span id="askState" class="small muted"></span></div>
+      <div class="qa" id="qa"></div>
     </div>
   </section>
 
-  <footer>מחירים הם הערכות בדולר ללילה לכל המשפחה, לא הצעות זמינות. פירוט ומקורות בקובץ route-decision.md בריפו.</footer>
+  <footer>המחירים הם הערכות בדולר ללילה לכל המשפחה, לא הצעות זמינות לתאריכים. פירוט ומקורות נמצאים בריפו, בקובץ route-decision.md.</footer>
 </div>
 
 <script>
-const CRIT=[
-  {id:"wow",label:"⭐ מלון \"וואו\" משפחתי",w:30},
-  {id:"attr",label:"🎢 אטרקציות חדשות",w:25},
-  {id:"beach",label:"🏝️ חוף ונוף חדש",w:15},
-  {id:"move",label:"🚐 מעברים קצרים",w:15},
-  {id:"price",label:"💰 מחיר",w:10},
-  {id:"isr",label:"🇮🇱 מלון לא \"ישראלי\"",w:5}
-];
+const CRIT=[{id:"wow",label:"⭐ מלון \"וואו\" משפחתי",w:30},{id:"attr",label:"🎢 אטרקציות חדשות",w:25},{id:"beach",label:"🏝️ חוף ונוף חדש",w:15},{id:"move",label:"🚐 מעברים קצרים",w:15},{id:"price",label:"💰 מחיר",w:10},{id:"isr",label:"🇮🇱 מלון לא \"ישראלי\"",w:5}];
+const PLACES={
+  pattaya:{name:"פטאיה",hotel:"pattaya_hotel",hl:["פארק מים ביום חול (Aquaverse מתאים לגלי; פארקי המים סגורים בימי רביעי)","יום שלם בקו לארן: קו סאק, חוף טיין, חוף נואל","ערב: מופע או גני נונג נוץ'"]},
+  huahin:{name:"הואה הין",hotel:"huahin_hotel",hl:["Vana Nava ביום חול","שייט בתעלת חאו דאנג ומערת פראיה נאקון","שוק לילה"]},
+  khaoyai:{name:"חאו יאי",hotel:"khaoyai_hotel",hl:["2 מיליון עטלפים בשקיעה","ג'ונגל עם מדריך: מפלים, גיבונים, אולי פילי בר","יום במלון ובחוות"]},
+  samui:{name:"סמוי",hotel:"samui_hotel",hl:["שייט וקיאקים באנג תונג","ימי מלון: בריכות ומגלשה","שוק הלילה בבופוט (שישי)"]},
+  bangkok:{name:"בנגקוק",hotel:"bangkok_hotel",hl:["שוק על פסי רכבת + שוק צף (ראשון)","KidZania · SkyWalk בשקיעה","מופע Siam Niramit"]}
+};
+const MOVES={"airport-pattaya":"סוברנבומי ← פטאיה: ~3–3.5 ש' כולל ביקורת","airport-huahin":"סוברנבומי ← הואה הין: ~4.5–5 ש' כולל ביקורת","airport-khaoyai":"סוברנבומי ← חאו יאי: ~4–4.5 ש' כולל ביקורת",
+  "pattaya-khaoyai":"ואן ~3.5–4 ש' (הערכה)","khaoyai-pattaya":"ואן ~3.5–4 ש' (הערכה)","huahin-khaoyai":"ואן ~4.5–5 ש' (הערכה)",
+  "khaoyai-samui":"ואן לשדה + טיסה: ~6.5 ש'","huahin-samui":"ואן לשדה + טיסה: ~6.5 ש'","pattaya-samui":"טיסה ישירה מאוטפאו: ~4 ש' (לאמת ל-2027)",
+  "samui-bangkok":"טיסה: ~3.5–4 ש'","bangkok-airport":"ב-24.8 יוצאים ב-21:00 לשדה (45–60 דק')"};
 const ROUTES=[
-  {id:"C",name:"ג'",rec:true,legs:["פטאיה 4","חאו יאי 4","סמוי 5","בנגקוק 3"],s:{wow:5,attr:5,beach:4,move:3,price:2,isr:3},
-   longest:"6.5 ש' (חאו יאי ← סמוי)",
-   pros:["פארק מים ביום חול (9–10.8)","יום שלם בקו לארן","3 עולמות: אטרקציות, ג'ונגל, אי"],
-   cons:["החוף בפטאיה עצמה חלש","חאו יאי על הסופ\"ש הארוך: עומס ומחיר"]},
-  {id:"E",name:"ה'",legs:["הואה הין 4","חאו יאי 4","סמוי 5","בנגקוק 3"],s:{wow:5,attr:5,beach:4,move:2,price:2,isr:3},
-   longest:"6.5 ש' + 4.5–5 ש'",
-   pros:["Vana Nava ביום חול","חוף שאפשר לשחות בו","3 עולמות"],
-   cons:["שני ימי מעבר ארוכים","אין קו לארן"]},
-  {id:"D",name:"ד'",legs:["חאו יאי 4","פטאיה 4","סמוי 5","בנגקוק 3"],s:{wow:5,attr:4,beach:4,move:5,price:2,isr:3},
-   longest:"כ-4 ש' (טיסה ישירה מאוטפאו)",
-   pros:["כל המעברים עד 4 שעות","3 עולמות"],
-   cons:["פטאיה ופארק המים בסופ\"ש הארוך: תורים"]},
-  {id:"B",name:"ב'",legs:["פטאיה 4","סמוי 9 (2 מלונות)","בנגקוק 3"],s:{wow:4,attr:4,beach:2,move:5,price:3,isr:3},
-   longest:"כ-4 ש'",pros:["הכי מעט מעברים","קו לארן"],cons:["רק 2 יעדים חדשים","חוף פטאיה חלש"]},
-  {id:"A",name:"א'",legs:["הואה הין 4","סמוי 9 (2 מלונות)","בנגקוק 3"],s:{wow:4,attr:3,beach:3,move:3,price:3,isr:3},
-   longest:"6.5 ש'",pros:["פשוט","Vana Nava ביום חול"],cons:["רק 2 יעדים חדשים","פחות אטרקציות"]}
+  {id:"C",name:"ג'",rec:true,legs:[["pattaya",4],["khaoyai",4],["samui",5],["bangkok",3]],s:{wow:5,attr:5,beach:4,move:3,price:2,isr:3},longest:"6.5 ש' (חאו יאי ← סמוי)",pros:["פארק מים ביום חול","יום שלם בקו לארן","3 עולמות: אטרקציות, ג'ונגל, אי"],cons:["החוף בפטאיה עצמה חלש","חאו יאי על הסופ\"ש הארוך: עומס ומחיר"]},
+  {id:"E",name:"ה'",legs:[["huahin",4],["khaoyai",4],["samui",5],["bangkok",3]],s:{wow:5,attr:5,beach:4,move:2,price:2,isr:3},longest:"6.5 ש' + 4.5–5 ש'",pros:["Vana Nava ביום חול","חוף שאפשר לשחות בו","3 עולמות"],cons:["2 ימי מעבר ארוכים","אין קו לארן"]},
+  {id:"D",name:"ד'",legs:[["khaoyai",4],["pattaya",4],["samui",5],["bangkok",3]],s:{wow:5,attr:4,beach:4,move:5,price:2,isr:3},longest:"~4 ש' (טיסה ישירה מאוטפאו)",pros:["כל המעברים עד 4 שעות","3 עולמות"],cons:["פטאיה ופארק המים על הסופ\"ש הארוך: תורים"]},
+  {id:"B",name:"ב'",legs:[["pattaya",4],["samui",9],["bangkok",3]],s:{wow:4,attr:4,beach:2,move:5,price:3,isr:3},longest:"~4 ש'",pros:["הכי מעט מעברים","קו לארן"],cons:["רק 2 יעדים חדשים","החוף בפטאיה חלש"]},
+  {id:"A",name:"א'",legs:[["huahin",4],["samui",9],["bangkok",3]],s:{wow:4,attr:3,beach:3,move:3,price:3,isr:3},longest:"6.5 ש'",pros:["פשוט","Vana Nava ביום חול"],cons:["רק 2 יעדים חדשים","פחות אטרקציות"]}
 ];
-const has=(r,place)=>r&&r.legs.some(l=>l.includes(place));
+const hasP=(r,p)=>!!r&&r.legs.some(l=>l[0]===p);
 const DECISIONS=[
-  {id:"pattaya_hotel",show:r=>has(r,"פטאיה"),title:"מלון בפטאיה",why:"החוף בעיר חלש, ולכן המלון והחוף הפרטי שלו מאוד חשובים.",opts:[
-    {id:"ic_pattaya",t:"InterContinental Pattaya",rec:true,d:"פראטומנאק, חוף פרטי, 3 בריכות + בריכת ילדים, מועדון ילדים. דירוג 8.8–9.1. לא מצאתי סימן לעומס ישראלי. כ-$350–600"},
-    {id:"centara_mirage",t:"Centara Grand Mirage",warn:"⚠️ סימן ישראלי",d:"פארק מים בתוך המלון, נהר עצל. מופיע בהמלצות של \"למטייל\". כ-$250–400"}]},
-  {id:"huahin_hotel",show:r=>has(r,"הואה הין"),title:"מלון בהואה הין",opts:[
-    {id:"marriott_hh",t:"Hua Hin Marriott",rec:true,d:"על החוף, 5 בריכות, מגלשה ענקית, בית עץ. לפארק המים בכרטיס יומי. כ-$300–500"},
-    {id:"vana_nava",t:"Holiday Inn Vana Nava",d:"4 כוכבים. כניסה ללא הגבלה לפארק המים, סוויטה עם 3 חדרי שינה. לא על החוף. כ-$250–450"}]},
-  {id:"khaoyai_hotel",show:r=>has(r,"חאו יאי"),title:"מלון בחאו יאי",why:"12–15.8 הוא סופ\"ש ארוך, ולכן צריך להזמין מוקדם.",opts:[
-    {id:"ic_khaoyai",t:"InterContinental Khao Yai",rec:true,d:"לינה בקרונות רכבת, חדרים מקושרים, מועדון ילדים. כ-$450–750 בחג"},
-    {id:"botanica",t:"Botanica Khao Yai",d:"פארק מים קטן בתוך המלון, פחות מיוחד. כ-$130–220"}]},
-  {id:"samui_hotel",show:r=>!!r,title:"מלון בסמוי",why:"במסלולים א' ו-ב' יש 9 לילות בסמוי, ולכן תבחרי גם מלון שני (בהערה).",opts:[
-    {id:"kimpton",t:"Kimpton Kitalay",rec:true,d:"מגלשה, בריכות, מועדון ילדים (4–12), חוף צ'ואנג מון. דירוג כ-9. כ-$600–900"},
-    {id:"melia",t:"Meliá Koh Samui",d:"אחת הבריכות הגדולות באי (לגונה) עם מגלשות, בסגנון JW. מחיר לא נבדק"},
-    {id:"fourseasons",t:"Four Seasons Koh Samui",d:"יוקרה גבוהה, וילות עם בריכה פרטית, מועדון ילדים חינם. כ-$1,600–2,700"}]},
-  {id:"bangkok_hotel",show:r=>!!r,title:"מלון בבנגקוק",opts:[
-    {id:"chatrium",t:"Chatrium Riverside",rec:true,d:"סוויטה עם 2 חדרי שינה על הנהר, 2 בריכות ילדים. כ-$200–350"},
-    {id:"apartment",t:"דירת שירות עם 2 חדרי שינה ליד הרכבת",d:"זול ונוח לתחבורה, פחות חוויה. כ-$150–250"}]},
-  {id:"kohlarn",show:r=>has(r,"פטאיה"),title:"יום בקו לארן",opts:[
-    {id:"private",t:"יום שלם בסירה פרטית",rec:true,d:"קו סאק (שנורקל), חוף טיין, חוף נואל. ג' 10.8, ובוחרים בבוקר לפי מצב הים. כ-1,500–3,500 באט לסירה"},
-    {id:"ferry",t:"מעבורת ציבורית",d:"זול (30 באט לאדם), 45 דק', צפוף יותר"},
-    {id:"skip",t:"לוותר",d:""}]},
-  {id:"budget",show:r=>!!r,title:"תקרת תקציב (בלי טיסות בינלאומיות)",type:"number",why:"ההערכה למסלול המומלץ היא כ-$14,300–22,400. התקרה קובעת את רמת המלונות."}
+  {id:"pattaya_hotel",show:r=>hasP(r,"pattaya"),title:"מלון בפטאיה",why:"החוף בעיר חלש, ולכן המלון והחוף הפרטי שלו הם העיקר.",opts:[
+    {id:"ic_pattaya",t:"InterContinental Pattaya",rec:true,lo:350,hi:600,d:"פראטומנאק, חוף פרטי, 3 בריכות + בריכת ילדים, מועדון ילדים. לא מצאתי סימן לעומס ישראלי."},
+    {id:"centara_mirage",t:"Centara Grand Mirage",warn:"⚠️ סימן ישראלי",lo:250,hi:400,d:"פארק מים בתוך המלון ונהר עצל. מופיע בהמלצות של \"למטייל\"."}]},
+  {id:"huahin_hotel",show:r=>hasP(r,"huahin"),title:"מלון בהואה הין",opts:[
+    {id:"marriott_hh",t:"Hua Hin Marriott",rec:true,lo:300,hi:500,d:"על החוף, 5 בריכות, מגלשה ענקית, בית עץ. לפארק המים נכנסים בכרטיס יומי."},
+    {id:"vana_nava",t:"Holiday Inn Vana Nava",lo:250,hi:450,d:"4 כוכבים. כניסה ללא הגבלה לפארק המים, סוויטה עם 3 חדרי שינה. לא על החוף."}]},
+  {id:"khaoyai_hotel",show:r=>hasP(r,"khaoyai"),title:"מלון בחאו יאי",why:"12–15.8 הוא סופ\"ש ארוך, ולכן צריך להזמין מוקדם.",opts:[
+    {id:"ic_khaoyai",t:"InterContinental Khao Yai",rec:true,lo:450,hi:750,d:"לינה בקרונות רכבת, חדרים מקושרים, מועדון ילדים."},
+    {id:"botanica",t:"Botanica Khao Yai",lo:130,hi:220,d:"פארק מים קטן בתוך המלון. פחות מיוחד."}]},
+  {id:"samui_hotel",show:r=>!!r,title:"מלון בסמוי",opts:[
+    {id:"kimpton",t:"Kimpton Kitalay",rec:true,lo:600,hi:900,d:"מגלשה, בריכות, מועדון ילדים (4–12), חוף צ'ואנג מון. דירוג כ-9."},
+    {id:"melia",t:"Meliá Koh Samui",lo:null,hi:null,d:"אחת הבריכות הגדולות באי, בסגנון לגונה עם מגלשות. המחיר עוד לא נבדק."},
+    {id:"fourseasons",t:"Four Seasons Koh Samui",lo:1600,hi:2700,d:"יוקרה גבוהה, וילות עם בריכה פרטית, מועדון ילדים חינם."}]},
+  {id:"bangkok_hotel",show:r=>!!r,title:"מלון בבנגקוק",why:"4 לילות, כדי שיהיה חדר עד שיוצאים לשדה ב-24.8 בלילה.",opts:[
+    {id:"chatrium",t:"Chatrium Riverside",rec:true,lo:200,hi:350,d:"סוויטה עם 2 חדרי שינה על הנהר, 2 בריכות ילדים."},
+    {id:"apartment",t:"דירת שירות עם 2 חדרי שינה ליד הרכבת",lo:150,hi:250,d:"זולה ונוחה לתחבורה, פחות חוויה."}]},
+  {id:"kohlarn",show:r=>hasP(r,"pattaya"),title:"יום בקו לארן",opts:[
+    {id:"private",t:"יום שלם בסירה פרטית",rec:true,lo:50,hi:110,once:true,d:"קו סאק (שנורקל), חוף טיין, חוף נואל. מחליטים בבוקר לפי מצב הים. 1,500–3,500 באט לסירה."},
+    {id:"ferry",t:"מעבורת ציבורית",lo:5,hi:10,once:true,d:"30 באט לאדם, 45 דק', צפוף יותר."},
+    {id:"skip",t:"לוותר",lo:0,hi:0,once:true,d:""}]},
+  {id:"budget",show:r=>!!r,title:"תקרת תקציב (בלי טיסות בינלאומיות)",type:"number",why:"התקרה קובעת איזו רמת מלונות אפשרית."}
 ];
+const FIXED={flights:[1300,2000],transfers:[500,900],activities:[1800,3000],food:[3000,4500],misc:[500,800]};
+const DEFAULT_W=Object.fromEntries(CRIT.map(c=>[c.id,c.w]));
 
-let state={choices:{},notes:{},weights:Object.fromEntries(CRIT.map(c=>[c.id,c.w]))};
-let db=null, saving=0, timers={};
+let loadedMine=false,db=null,userNs=null,myId=null,votes={},qa=[],profiles={},saving=0,timers={},ctl=null;
+let mine={choices:{},notes:{},weights:{...DEFAULT_W}};
 const $=s=>document.querySelector(s);
-const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const esc=s=>String(s??"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const route=v=>ROUTES.find(r=>r.id===v?.choices?.route);
+const score=r=>{const w=mine.weights,t=CRIT.reduce((a,c)=>a+(+w[c.id]||0),0)||1;return CRIT.reduce((a,c)=>a+r.s[c.id]*(+w[c.id]||0),0)/t};
+const others=()=>Object.entries(votes).filter(([id])=>id!==myId);
+const nameOf=id=>id===myId?"את/ה":(profiles[id]?.name||"מישהו");
+const colorOf=id=>profiles[id]?.color||"var(--muted)";
+const whoTag=id=>`<span class="who"><i style="background:${esc(colorOf(id))}"></i>${esc(nameOf(id))}</span>`;
+const pickersOf=(key,val)=>Object.entries(votes).filter(([id,v])=>id!==myId&&v.choices?.[key]===val).map(([id])=>whoTag(id)).join(" ");
 
-function score(r){const tot=CRIT.reduce((a,c)=>a+(+state.weights[c.id]||0),0)||1;
-  return CRIT.reduce((a,c)=>a+r.s[c.id]*(+state.weights[c.id]||0),0)/tot;}
-function curRoute(){return ROUTES.find(r=>r.id===state.choices.route)}
-
-function renderWeights(){
-  $("#weights").innerHTML=CRIT.map(c=>`<div class="w"><label for="w-${c.id}"><span>${c.label}</span><output id="o-${c.id}">${state.weights[c.id]}</output></label><input type="range" id="w-${c.id}" min="0" max="50" step="5" value="${state.weights[c.id]}" data-w="${c.id}"></div>`).join("");
-}
+function renderPeople(){const ids=Object.keys(votes);$("#people").innerHTML=`<span class="muted">מי בחר:</span> ${ids.length?ids.map(whoTag).join(" "):'<span class="muted">עדיין אף אחד</span>'}`}
+function renderWeights(){$("#weights").innerHTML=CRIT.map(c=>`<div class="w"><label for="w-${c.id}"><span>${c.label}</span><output id="o-${c.id}">${mine.weights[c.id]}</output></label><input type="range" id="w-${c.id}" min="0" max="50" step="5" value="${mine.weights[c.id]}" data-w="${c.id}"></div>`).join("")}
 function renderRoutes(){
-  const list=[...ROUTES].sort((a,b)=>score(b)-score(a));
-  $("#routes").innerHTML=list.map(r=>{const sc=score(r),ch=state.choices.route===r.id;
+  $("#routes").innerHTML=[...ROUTES].sort((a,b)=>score(b)-score(a)).map(r=>{const sc=score(r),ch=mine.choices.route===r.id,oth=pickersOf("route",r.id);
     return `<label class="route${ch?" chosen":""}"><input type="radio" name="route" value="${r.id}" id="route-${r.id}" ${ch?"checked":""}>
-    <div class="main"><h3>מסלול ${r.name} ${r.rec?'<span class="chip rec">ההמלצה שלי</span>':""}</h3>
-      <div class="legs">${r.legs.map(l=>`<span class="chip">${esc(l)}</span>`).join('<span class="arrow">←</span>')}</div>
+    <div class="main"><h3>מסלול ${r.name} ${r.rec?'<span class="chip rec">ההמלצה שלי</span>':""} ${oth}</h3>
+      <div class="legs">${r.legs.map(([p,n])=>`<span class="chip">${PLACES[p].name} ${n}</span>`).join('<span class="arrow">←</span>')}</div>
       <div class="small muted">המעבר הארוך ביותר: ${esc(r.longest)}</div>
-      <div class="pc"><div class="pro"><div class="h">בעד</div><ul>${r.pros.map(p=>`<li>${esc(p)}</li>`).join("")}</ul></div>
-      <div class="con"><div class="h">נגד</div><ul>${r.cons.map(p=>`<li>${esc(p)}</li>`).join("")}</ul></div></div></div>
+      <div class="pc"><div class="pro"><div class="h">בעד</div><ul>${r.pros.map(p=>`<li>${esc(p)}</li>`).join("")}</ul></div><div class="con"><div class="h">נגד</div><ul>${r.cons.map(p=>`<li>${esc(p)}</li>`).join("")}</ul></div></div></div>
     <div class="score"><b>${sc.toFixed(2)}</b><div class="bar"><span style="width:${(sc/5*100).toFixed(0)}%"></span></div></div></label>`}).join("");
 }
 function renderDecisions(){
-  const r=curRoute();
-  const vis=DECISIONS.filter(d=>d.show(r));
-  $("#decisions").innerHTML=r?vis.map(d=>{
+  const r=route(mine);
+  $("#decisions").innerHTML=r?DECISIONS.filter(d=>d.show(r)).map(d=>{
     const body=d.type==="number"
-      ?`<label for="budget-input" class="small">דולר</label><input type="number" id="budget-input" min="0" step="500" inputmode="numeric" value="${esc(state.choices.budget||"")}" placeholder="לדוגמה 18000">`
-      :`<div class="opts">${d.opts.map(o=>{const ch=state.choices[d.id]===o.id;return `<label class="opt${ch?" chosen":""}"><input type="radio" name="${d.id}" value="${o.id}" id="${d.id}-${o.id}" ${ch?"checked":""}><span class="t">${esc(o.t)} ${o.rec?'<span class="chip rec">מומלץ</span>':""}${o.warn?`<span class="chip warn">${esc(o.warn)}</span>`:""}</span>${o.d?`<span class="d">${esc(o.d)}</span>`:""}</label>`}).join("")}</div>`;
-    return `<div class="panel"><h3>${esc(d.title)}</h3>${d.why?`<p class="why">${esc(d.why)}</p>`:""}${body}
-      <label for="note-${d.id}" class="small muted">הערה</label><textarea id="note-${d.id}" data-note="${d.id}">${esc(state.notes[d.id]||"")}</textarea></div>`}).join("")
-    :`<div class="panel"><p class="muted">בחרו קודם מסלול בשלב 2, ואז יופיעו כאן ההחלטות שלו.</p></div>`;
-  renderProgress();
+      ?`<label for="budget-input" class="small">דולר</label><input type="number" id="budget-input" min="0" step="500" inputmode="numeric" value="${esc(mine.choices.budget||"")}" placeholder="לדוגמה 18000"><div class="small muted">${others().filter(([,v])=>v.choices?.budget).map(([id,v])=>`${whoTag(id)} $${(+v.choices.budget).toLocaleString("en-US")}`).join(" ")}</div>`
+      :`<div class="opts">${d.opts.map(o=>{const ch=mine.choices[d.id]===o.id,oth=pickersOf(d.id,o.id);return `<label class="opt${ch?" chosen":""}"><input type="radio" name="${d.id}" value="${o.id}" id="${d.id}-${o.id}" ${ch?"checked":""}><span class="t">${esc(o.t)} ${o.rec?'<span class="chip rec">מומלץ</span>':""}${o.warn?`<span class="chip warn">${esc(o.warn)}</span>`:""}${!o.once&&o.lo?`<span class="chip">$${o.lo}–${o.hi}</span>`:""}</span>${o.d?`<span class="d">${esc(o.d)}</span>`:""}${oth?`<span class="vv">בחרו גם: ${oth}</span>`:""}</label>`}).join("")}</div>`;
+    return `<div class="panel"><h3>${esc(d.title)}</h3>${d.why?`<p class="why">${esc(d.why)}</p>`:""}${body}<label for="note-${d.id}" class="small muted">הערה</label><textarea id="note-${d.id}" data-note="${d.id}">${esc(mine.notes[d.id]||"")}</textarea></div>`}).join("")
+    :`<div class="panel"><p class="muted">קודם בוחרים מסלול בשלב 2, ואז מופיעות כאן ההחלטות שלו.</p></div>`;
 }
-function renderProgress(){
-  const r=curRoute();const vis=["route",...(r?DECISIONS.filter(d=>d.show(r)).map(d=>d.id):[])];
-  const done=vis.filter(id=>state.choices[id]!==undefined&&state.choices[id]!=="").length;
-  $("#progText").textContent=`${done} מתוך ${vis.length} החלטות`;
-  $("#dots").innerHTML=vis.map(id=>`<span class="dot${state.choices[id]?" on":""}"></span>`).join("");
+function renderAgree(){
+  const ids=Object.keys(votes);
+  const keys=[{id:"route",t:"מסלול",label:v=>{const r=ROUTES.find(x=>x.id===v);return r?"מסלול "+r.name:""}},
+    ...DECISIONS.map(d=>({id:d.id,t:d.title,label:v=>d.type==="number"?(v?"$"+(+v).toLocaleString("en-US"):""):(d.opts.find(o=>o.id===v)?.t||"")}))];
+  if(!ids.length){$("#agree").innerHTML=`<tr><td class="muted">עדיין אין בחירות. מתחילים בשלב 1.</td></tr>`;return}
+  $("#agree").innerHTML=`<thead><tr><th>החלטה</th>${ids.map(id=>`<th>${whoTag(id)}</th>`).join("")}<th>מצב</th></tr></thead><tbody>${keys.map(k=>{
+    const vals=ids.map(id=>votes[id].choices?.[k.id]);const filled=vals.filter(v=>v!==undefined&&v!==null&&v!=="");
+    if(!filled.length)return "";
+    const st=filled.length<ids.length?'<span class="chip warn">חסר</span>':new Set(filled.map(String)).size===1?'<span class="chip ok">מוסכם ✓</span>':'<span class="chip bad">חלוקים</span>';
+    return `<tr><td>${esc(k.t)}</td>${vals.map(v=>`<td>${esc(k.label(v))||'<span class="muted">—</span>'}</td>`).join("")}<td>${st}</td></tr>`}).join("")}</tbody>`;
 }
-function fillNotes(){document.querySelectorAll("textarea[data-note]").forEach(t=>{if(document.activeElement!==t)t.value=state.notes[t.dataset.note]||""})}
-function renderAll(){renderRoutes();renderDecisions();fillNotes()}
+function fmtDay(d){const dt=new Date(2027,7,d);return ["א'","ב'","ג'","ד'","ה'","ו'","ש'"][dt.getDay()]+" "+dt.getDate()+"."+(dt.getMonth()+1)}
+function optOf(did,v){return DECISIONS.find(d=>d.id===did)?.opts?.find(o=>o.id===v)}
+function renderPlan(){
+  const r=route(mine);
+  if(!r){$("#plan").innerHTML=`<p class="muted">אחרי שתבחרו מסלול, כאן תופיע התוכנית עם תאריכים, מלונות ומעברים.</p>`;$("#budget").innerHTML="";return}
+  let day=8,prev="airport",html="";
+  r.legs.forEach(([p,n])=>{const P=PLACES[p],o=optOf(P.hotel,mine.choices[P.hotel]);
+    html+=`<div class="move">🚐 ${esc(MOVES[prev+"-"+p]||"")}</div>`;
+    const end=p==="bangkok"?24:day+n;
+    html+=`<div class="leg"><div><div class="when">${fmtDay(day)} – ${fmtDay(end)}</div><div class="small muted">${n} לילות</div></div><div><h3>${P.name}</h3><div class="small">${o?"🏨 "+esc(o.t):'<span class="chip warn">מלון לא נבחר</span>'}</div><ul class="small">${P.hl.map(h=>`<li>${esc(h)}</li>`).join("")}</ul></div></div>`;
+    day+=n;prev=p});
+  html+=`<div class="move">🛫 ${MOVES["bangkok-airport"]} · המראה 25.8 ב-01:50</div>`;
+  $("#plan").innerHTML=html;
+  let lo=0,hi=0,missing=[];
+  r.legs.forEach(([p,n])=>{const P=PLACES[p],o=optOf(P.hotel,mine.choices[P.hotel]);const nights=p==="bangkok"?n+1:n;
+    if(!o||o.lo==null){missing.push(PLACES[p].name);return}lo+=o.lo*nights;hi+=o.hi*nights});
+  const kl=optOf("kohlarn",mine.choices.kohlarn);if(hasP(r,"pattaya")&&kl){lo+=kl.lo;hi+=kl.hi}
+  const fx=Object.values(FIXED).reduce((a,[l,h])=>[a[0]+l,a[1]+h],[0,0]);
+  const tlo=lo+fx[0],thi=hi+fx[1],cap=+mine.choices.budget||0;
+  const capNote=cap?(thi<=cap?'<span class="chip ok">בתוך התקרה ✓</span>':tlo>cap?'<span class="chip bad">מעל התקרה</span>':'<span class="chip warn">קרוב לתקרה</span>'):"";
+  $("#budget").innerHTML=`<h3>תקציב משוער (בלי טיסות בינלאומיות)</h3><div class="row"><span class="money">$${tlo.toLocaleString("en-US")}–${thi.toLocaleString("en-US")}</span>${capNote}</div>
+   ${missing.length?`<p class="small" style="color:var(--warn)">לא כולל לינה ב: ${esc(missing.join(", "))} (מלון לא נבחר או בלי מחיר)</p>`:""}
+   <div class="tablewrap"><table><tbody><tr><td>לינה</td><td>$${lo.toLocaleString("en-US")}–${hi.toLocaleString("en-US")}</td></tr><tr><td>טיסות פנים</td><td>$1,300–2,000</td></tr><tr><td>העברות</td><td>$500–900</td></tr><tr><td>פעילויות</td><td>$1,800–3,000</td></tr><tr><td>אוכל</td><td>$3,000–4,500</td></tr><tr><td>שונות</td><td>$500–800</td></tr></tbody></table></div><p class="small muted">הכול הערכות. אין כאן הצעות זמינות לתאריכים.</p>`;
+}
+function renderQA(){$("#qa").innerHTML=qa.slice(0,12).map(x=>`<article><div class="q">${whoTag(x.by)} ${esc(x.q)}</div><div class="a">${esc(x.a)}</div></article>`).join("")}
+function renderAll(){renderPeople();renderAgree();renderRoutes();const a=document.activeElement;if(!(a&&$("#decisions").contains(a)&&(a.tagName==="TEXTAREA"||a.tagName==="INPUT")&&a.type!=="radio"))renderDecisions();renderPlan();renderQA()}
 
 function setSave(t){$("#saveState").textContent=t}
-function local(){try{localStorage.setItem("th27",JSON.stringify(state))}catch(e){}}
-async function persist(key,body){
+function local(){try{localStorage.setItem("th27v2",JSON.stringify(mine))}catch(e){}}
+let writing=false,dirty=false;
+async function persist(){
   local();
-  if(!db){setSave("נשמר רק במכשיר הזה");return}
-  saving++;setSave("שומר…");
-  try{await db.doc("decisions/"+key).set({...body,at:new Date().toISOString()});}
-  catch(e){setSave("השמירה נכשלה. נסי שוב");saving--;return}
-  saving--; if(!saving)setSave("נשמר ✓");
+  if(!db||!myId){setSave("נשמר רק במכשיר הזה");return}
+  if(writing){dirty=true;return}
+  writing=true;setSave("שומר…");
+  try{await db.doc("votes/"+myId).set({choices:mine.choices,notes:mine.notes,weights:mine.weights,at:new Date().toISOString()});setSave("נשמר ✓")}
+  catch(e){setSave("השמירה נכשלה. אולי חסרה הרשאת עריכה")}
+  writing=false;if(dirty){dirty=false;persist()}
 }
-function saveDecision(id){persist(id,{choice:state.choices[id]??null,note:state.notes[id]||""})}
-function later(key,fn,ms){clearTimeout(timers[key]);timers[key]=setTimeout(fn,ms)}
+function later(k,fn,ms){clearTimeout(timers[k]);timers[k]=setTimeout(fn,ms)}
+function syncMine(){votes[myId||"local"]=JSON.parse(JSON.stringify(mine))}
 
-document.addEventListener("input",e=>{
-  const t=e.target;
-  if(t.dataset.w){state.weights[t.dataset.w]=+t.value;$("#o-"+t.dataset.w).textContent=t.value;renderRoutes();
-    later("weights",()=>persist("weights",{weights:state.weights}),700)}
-  else if(t.dataset.note){const k=t.dataset.note;state.notes[k]=t.value;
-    later("n-"+k,()=>k==="claude"?persist("message-to-claude",{note:t.value}):saveDecision(k),900)}
-  else if(t.id==="budget-input"){state.choices.budget=t.value;renderProgress();later("budget",()=>saveDecision("budget"),900)}
-});
-document.addEventListener("change",e=>{
-  const t=e.target;if(t.type!=="radio")return;
-  state.choices[t.name]=t.value;
-  if(t.name==="route"){renderRoutes();renderDecisions();fillNotes()}else{renderDecisions();fillNotes()}
-  saveDecision(t.name);
-});
+document.addEventListener("input",e=>{const t=e.target;
+  if(t.dataset.w){mine.weights[t.dataset.w]=+t.value;$("#o-"+t.dataset.w).textContent=t.value;renderRoutes();later("save",persist,700)}
+  else if(t.dataset.note){mine.notes[t.dataset.note]=t.value;later("save",persist,900)}
+  else if(t.id==="budget-input"){mine.choices.budget=t.value;syncMine();renderAgree();renderPlan();later("save",persist,900)}});
+document.addEventListener("change",e=>{const t=e.target;if(t.type!=="radio")return;
+  mine.choices[t.name]=t.value;syncMine();renderAll();persist()});
 
-try{const s=JSON.parse(localStorage.getItem("th27")||"null");if(s)state={...state,...s,weights:{...state.weights,...(s.weights||{})}}}catch(e){}
-renderWeights();renderAll();setSave("מתחבר…");
+function brief(){
+  const lines=["משפחה ישראלית מתכננת טיול לתאילנד: נחיתה בבנגקוק 8.8.2027 12:35, המראה 25.8.2027 01:50. ילדים: 14, 10, 6 (הקטנה לא שוחה לבד). אוהבים חופים, בריכות, אטרקציות, דיסני ומארוול. בררנים באוכל (מעדיפים מערבי). רוצים מלון 'וואו' משפחתי (הרף: JW Marriott Khao Lak ו-Anantara Koh Yao Yai), 4–5 לילות ליעד, לא חוזרים על פוקט/קראבי/קאו לאק/קו יאו יאי, לא מלונות עם עומס ישראלי, פארק מים בלי תורים. כבר עשו: פילים, דולפינריום, אקווריום, אומגות, טרקטורונים, מפלים ומעיינות חמים. 12–15.8 סופ\"ש ארוך בתאילנד.",
+    "מסלולים:",...ROUTES.map(r=>`${r.name}: ${r.legs.map(([p,n])=>PLACES[p].name+" "+n).join(" ← ")} | בעד: ${r.pros.join("; ")} | נגד: ${r.cons.join("; ")}`),
+    "אפשרויות מלון:",...DECISIONS.filter(d=>d.opts).map(d=>`${d.title}: `+d.opts.map(o=>`${o.t}${o.lo!=null&&!o.once?` ($${o.lo}-${o.hi}/לילה)`:""} - ${o.d}`).join(" | ")),
+    "הבחירות עד עכשיו:",...Object.entries(votes).map(([id,v])=>`${id===myId?"השואל/ת":"בן/בת הזוג"}: ${JSON.stringify(v.choices||{})} הערות: ${JSON.stringify(v.notes||{})}`)];
+  return lines.join("\n");
+}
+$("#askBtn").onclick=async()=>{
+  const q=$("#ask").value.trim();if(!q)return;
+  const sample=await window.claude?.use?.("sample");
+  if(!sample){$("#askState").textContent="אי אפשר לשאול את Claude מכאן. אפשר לשאול בצ'אט.";return}
+  ctl=new AbortController();$("#askBtn").disabled=true;$("#stopBtn").hidden=false;$("#askState").textContent="חושב…";
+  const live={q,a:"",by:myId||"local"};qa.unshift(live);renderQA();
+  try{const {text}=await sample(`את/ה יועץ/ת טיולים משפחתיים מקצועי/ת. ענה/י בעברית, בקצרה ובתמציתיות, ישר ולעניין, עם המלצה ברורה. אל תמציא/י מחירים או זמינות; אם משהו דורש בדיקה, אמור/י זאת.\n\nהקשר:\n${brief()}\n\nהשאלה:\n${q}`,{signal:ctl.signal,cache:false,onText:({text})=>{live.a=text;$("#askState").textContent="";renderQA()}});
+    live.a=text;$("#ask").value="";
+    if(db){try{await db.collection("qa").add({q,a:text,by:myId,at:new Date().toISOString()})}catch(e){}}
+  }catch(e){qa.shift();$("#askState").textContent=e.code==="cancelled"?"":e.code==="not_granted"?"לא אושר לשאול את Claude מהעמוד.":e.code==="rate_limited"?"יותר מדי שאלות כרגע. נסו שוב בעוד כמה דקות.":"משהו השתבש. נסו שוב."}
+  finally{$("#askBtn").disabled=false;$("#stopBtn").hidden=true;renderQA()}
+};
+$("#stopBtn").onclick=()=>ctl?.abort();
+
+try{const s=JSON.parse(localStorage.getItem("th27v2")||"null");if(s)mine={...mine,...s,weights:{...DEFAULT_W,...(s.weights||{})}}}catch(e){}
+renderWeights();renderAll();
 
 (async()=>{
-  const timeout=setTimeout(()=>{if(!db)setSave("נשמר רק במכשיר הזה")},10000);
-  try{db=await window.claude?.use?.("db")}catch(e){db=null}
-  if(!db){clearTimeout(timeout);setSave("נשמר רק במכשיר הזה");return}
-  db.collection("decisions").onSnapshot(snap=>{
-    clearTimeout(timeout);
-    snap.docs.forEach(d=>{const v=d.data()||{};
-      if(d.id==="weights"&&v.weights){state.weights={...state.weights,...v.weights}}
-      else if(d.id==="message-to-claude"){state.notes.claude=v.note||""}
-      else{if(v.choice!==undefined&&v.choice!==null)state.choices[d.id]=v.choice;if(typeof v.note==="string")state.notes[d.id]=v.note}});
-    renderWeights();renderAll();if(!saving)setSave("מחובר ✓ הבחירות נשמרות");
-  },()=>{clearTimeout(timeout);setSave("אין חיבור לשמירה. נשמר רק במכשיר הזה")});
+  const to=setTimeout(()=>{if(!db)setSave("נשמר רק במכשיר הזה")},10000);
+  try{[db,userNs]=await Promise.all([window.claude?.use?.("db"),window.claude?.use?.("user")])}catch(e){}
+  if(userNs){try{myId=await userNs.id()}catch(e){}}
+  if(!db||!myId){clearTimeout(to);setSave("נשמר רק במכשיר הזה");if(myId===null)votes={local:mine};renderAll();return}
+  const resolve=async()=>{try{profiles=await userNs.profiles([...new Set([...Object.keys(votes),...qa.map(x=>x.by)])])}catch(e){}renderAll()};
+  db.collection("votes").onSnapshot(snap=>{clearTimeout(to);
+    const nv={};snap.docs.forEach(d=>{nv[d.id]=d.data()||{}});
+    if(nv[myId]&&!loadedMine){loadedMine=true;const v=nv[myId];mine={choices:{...(v.choices||{})},notes:{...(v.notes||{})},weights:{...DEFAULT_W,...(v.weights||{})}};renderWeights()}
+    else if(!nv[myId]){loadedMine=true;if(Object.keys(mine.choices).length)persist()}
+    nv[myId]=JSON.parse(JSON.stringify(mine));
+    votes=nv;resolve();if(!writing)setSave("מחובר ✓ הבחירות נשמרות");
+  },()=>{clearTimeout(to);setSave("אין חיבור לשמירה. נשמר רק במכשיר הזה")});
+  db.collection("qa").orderBy("at","desc").limit(20).onSnapshot(snap=>{qa=snap.docs.map(d=>d.data()||{}).filter(x=>x.q);resolve()},()=>{});
 })();
 </script>
