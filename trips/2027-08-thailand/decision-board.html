@@ -46,7 +46,7 @@ section{display:flex;flex-direction:column;gap:12px}
 .w output{font-variant-numeric:tabular-nums;color:var(--sea);font-weight:700}
 input[type=range]{width:100%;accent-color:var(--sea)}
 .routes{display:flex;flex-direction:column;gap:10px}
-.route{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:14px 16px;display:grid;grid-template-columns:auto 1fr auto;gap:6px 14px;align-items:start;cursor:pointer}
+.route{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:14px 16px;display:flex;flex-direction:column;gap:10px;min-width:0}
 .route:focus-within,.opt:focus-within{outline:2px solid var(--sea);outline-offset:2px}
 .route.chosen{border-color:var(--sea);box-shadow:0 0 0 2px var(--sea) inset}
 .route input,.opt input{margin-top:5px;accent-color:var(--sea);width:18px;height:18px}
@@ -86,8 +86,14 @@ th{font-weight:700;color:var(--muted);font-size:.85rem}
 .qa .q{font-weight:700}
 .qa .a{white-space:pre-wrap;font-size:.95rem}
 .qa article{border-top:1px solid var(--line);padding-top:10px;display:flex;flex-direction:column;gap:4px}
+details{border-top:1px solid var(--line);padding-top:8px}
+summary{cursor:pointer;font-weight:700;color:var(--sea)}
+details>*:not(summary){margin-top:8px}
+.bg details:first-of-type{border-top:0;padding-top:0}
+.bg ul{margin:0;padding-inline-start:18px}
+.pick{display:grid;grid-template-columns:auto 1fr auto;gap:6px 14px;align-items:start;cursor:pointer}
 footer{font-size:.85rem;color:var(--muted)}
-@media (max-width:560px){.pc{grid-template-columns:1fr}.route{grid-template-columns:auto 1fr}.score{grid-column:2;text-align:start;display:flex;gap:10px;align-items:center}.score .bar{flex:1;margin:0}.leg{grid-template-columns:1fr}}
+@media (max-width:560px){.pc{grid-template-columns:1fr}.pick{grid-template-columns:auto 1fr}.score{grid-column:2;text-align:start;display:flex;gap:10px;align-items:center}.score .bar{flex:1;margin:0}.leg{grid-template-columns:1fr}}
 @media (prefers-reduced-motion:no-preference){.bar span{transition:width .3s}}
 </style>
 
@@ -103,6 +109,48 @@ footer{font-size:.85rem;color:var(--muted)}
   </header>
 
   <div class="status"><div class="row" id="people"><span class="muted">מי בחר:</span></div><span id="saveState" role="status">מתחבר…</span></div>
+
+  <section aria-labelledby="bg-h">
+    <h2 id="bg-h">רקע לבחירה</h2>
+    <div class="panel bg">
+      <details open><summary>שני סוגי עצירות, והאיזון ביניהם</summary>
+        <ul>
+          <li><b>🏝️ מלון-יעד:</b> המלון עצמו הוא החוויה, עם חוף, בריכות ואטרקציות בפנים, וכמעט לא יוצאים ממנו. כמו אננטרה בקו יאו יאי. כאן שווה להשקיע במלון.</li>
+          <li><b>🎒 בסיס לטיולים:</b> יוצאים כל יום לאטרקציות, והמלון משמש לשינה ולבריכה בערב. כאן מספיק מלון טוב, בלי לשלם על וואו.</li>
+          <li><b>המטרה:</b> חופשה שמשלבת בין השניים. ליד כל מסלול למטה מופיעה החלוקה שלו.</li>
+        </ul></details>
+      <details><summary>מה אנחנו מחפשים</summary>
+        <ul>
+          <li>חוויה משפחתית עם אטרקציות שוות, ולא חופשה שקטה</li>
+          <li>יעדים חדשים: לא פוקט, קראבי, קאו לאק או קו יאו יאי</li>
+          <li>4–5 לילות בכל יעד. בפעם הקודמת היה קצר מדי</li>
+          <li>פארק מים, בלי תורים ארוכים. לכן חשוב שהוא ייצא ביום חול</li>
+          <li>מלונות בלי עומס של ישראלים</li>
+          <li>אוכל מערבי זמין: הילדים ואלה בררנים</li>
+          <li>גלי (6) עוד לא שוחה לבד: אפוד בכל פעילות מים</li>
+        </ul></details>
+      <details><summary>מה כבר עשינו ב-2024, ולכן לא בתוכנית</summary>
+        <p>פילים, דולפינריום, אקווריום, אומגות, טרקטורונים, מפלים ומעיינות חמים, וצלילת היכרות (שיר ואלה). כן חוזרים על חוף, בריכה, שייט קצר וטבע, אבל בנוף חדש. וגם מופעי ערב.</p></details>
+      <details><summary>אוגוסט בתאילנד: מזג אוויר וים</summary>
+        <ul>
+          <li>הצד המערבי (פוקט, קראבי) במונסון: ים סוער. לכן כל המסלולים בצד המזרחי ובפנים הארץ.</li>
+          <li>גם בצד המזרחי צפויות מקלחות, בעיקר אחר הצהריים. אף אחד לא מבטיח שמש.</li>
+          <li>מדוזות ארגז: העונה בסמוי היא יולי–דצמבר, ובפטאיה יש מדוזות עד אמצע אוגוסט. חליפות לייקרה לילדים, ושואלים את המלון לפני שנכנסים לים.</li>
+          <li>12–15.8 הוא סוף שבוע ארוך בתאילנד (יום האם). איפה שנהיה אז יהיה עמוס ויקר יותר.</li>
+        </ul></details>
+      <details><summary>יעדים שנבדקו ונפסלו</summary>
+        <ul>
+          <li><b>קנצ׳נבורי:</b> בעונת הגשמים סוגרים שחייה במפלים, ואין שם מלון ברמה שרצינו</li>
+          <li><b>קו צ׳אנג וקו קוד:</b> מהאזורים הגשומים ביותר באוגוסט</li>
+          <li><b>צ׳יאנג מאי:</b> חוויות שכבר עשינו, וגשום</li>
+          <li><b>קו טאו:</b> בעיקר צלילה</li>
+          <li><b>קו פנגן:</b> המלון הטוב שם שקט מדי לילדים, והמעבר בסירה יקר</li>
+          <li><b>קו סאמט:</b> יבש, אבל לא נמצא מלון משפחתי מתאים</li>
+        </ul></details>
+      <details><summary>איך משתמשים בלוח</summary>
+        <p>כל אחד בוחר לעצמו. קובעים משקלות, בוחרים מסלול, ואז מלונות. בטבלה למטה רואים איפה אנחנו מסכימים. אפשר לפתוח את "פירוט מלא" בכל מסלול, ולשאול את Claude בתחתית העמוד.</p></details>
+    </div>
+  </section>
 
   <section aria-labelledby="ag-h">
     <h2 id="ag-h">איפה אתם עומדים</h2>
@@ -149,11 +197,21 @@ footer{font-size:.85rem;color:var(--muted)}
 <script>
 const CRIT=[{id:"wow",label:"⭐ מלון \"וואו\" משפחתי",w:30},{id:"attr",label:"🎢 אטרקציות חדשות",w:25},{id:"beach",label:"🏝️ חוף ונוף חדש",w:15},{id:"move",label:"🚐 מעברים קצרים",w:15},{id:"price",label:"💰 מחיר",w:10},{id:"isr",label:"🇮🇱 מלון לא \"ישראלי\"",w:5}];
 const PLACES={
-  pattaya:{name:"פטאיה",hotel:"pattaya_hotel",hl:["פארק מים ביום חול (Aquaverse מתאים לגלי; פארקי המים סגורים בימי רביעי)","יום שלם בקו לארן: קו סאק, חוף טיין, חוף נואל","ערב: מופע או גני נונג נוץ'"]},
-  huahin:{name:"הואה הין",hotel:"huahin_hotel",hl:["Vana Nava ביום חול","שייט בתעלת חאו דאנג ומערת פראיה נאקון","שוק לילה"]},
-  khaoyai:{name:"חאו יאי",hotel:"khaoyai_hotel",hl:["2 מיליון עטלפים בשקיעה","ג'ונגל עם מדריך: מפלים, גיבונים, אולי פילי בר","יום במלון ובחוות"]},
-  samui:{name:"סמוי",hotel:"samui_hotel",hl:["שייט וקיאקים באנג תונג","ימי מלון: בריכות ומגלשה","שוק הלילה בבופוט (שישי)"]},
-  bangkok:{name:"בנגקוק",hotel:"bangkok_hotel",hl:["שוק על פסי רכבת + שוק צף (ראשון)","KidZania · SkyWalk בשקיעה","מופע Siam Niramit"]}
+  pattaya:{name:"פטאיה",type:"base",hotel:"pattaya_hotel",about:"עיר נופש גדולה, שעה וחצי עד שעתיים מהשדה. באים בשביל האטרקציות, לא בשביל החוף.",
+    facts:[["מה עושים","שני פארקי מים גדולים (Aquaverse מתאים יותר לגלי), יום שייט לאי קו לארן, גני נונג נוץ׳ ומופעי ערב"],["חוף","בעיר עצמה חלש והמים לפעמים עכורים. בקו לארן הרבה יותר טוב"],["אוגוסט","מקלחות קצרות וים חמים. ייתכנו מדוזות עד אמצע החודש"],["חיסרון","עיר סואנת עם מוניטין לא משפחתי. המלון המומלץ נמצא באזור שקט עם חוף פרטי"]],
+    hl:["פארק מים ביום חול (Aquaverse מתאים לגלי; פארקי המים סגורים בימי רביעי)","יום שלם בקו לארן: קו סאק, חוף טיין, חוף נואל","ערב: מופע או גני נונג נוץ׳"]},
+  huahin:{name:"הואה הין",type:"base",hotel:"huahin_hotel",about:"עיר נופש תאילנדית ותיקה, כ-3 שעות מהשדה. רגועה יותר מפטאיה.",
+    facts:[["מה עושים","פארק המים Vana Nava, שייט בתעלה בין מנגרובים להרי גיר, מערה עם ביתן מלכותי, שוק לילה"],["חוף","ארוך ורחב, אפשר לשחות. לא מרהיב"],["אוגוסט","יחסית יבש, והים בדרך כלל רגוע"],["חיסרון","רחוק משאר היעדים, ולכן ימי המעבר ארוכים"]],
+    hl:["Vana Nava ביום חול","שייט בתעלת חאו דאנג ומערת פראיה נאקון","שוק לילה"]},
+  khaoyai:{name:"חאו יאי",type:"mixed",hotel:"khaoyai_hotel",about:"פארק לאומי של ג׳ונגל בהרים, יעד סוף השבוע של תאילנדים מבנגקוק. אין ים.",
+    facts:[["מה עושים","2 מיליון עטלפים שיוצאים ממערה בשקיעה, יום ג׳ונגל עם מדריך (מפלים, גיבונים, אולי פילי בר), פארק שעשועים ומים Scenical World"],["המלון","באינטרקונטיננטל ישנים בקרונות רכבת היסטוריים, וזו חוויה בפני עצמה"],["אוגוסט","גשום, בעיקר אחר הצהריים. המפלים בשיא. בשבילים יש עלוקות, והולכים עם גרביים מיוחדות"],["חיסרון","אם נהיה שם ב-12–15.8, יהיה עמוס ויקר יותר"]],
+    hl:["2 מיליון עטלפים בשקיעה","ג׳ונגל עם מדריך: מפלים, גיבונים, אולי פילי בר","יום במלון ובחוות"]},
+  samui:{name:"סמוי",type:"resort",hotel:"samui_hotel",about:"האי של הטיול, ומלון-היעד. רוב הזמן נמצאים במלון: בריכות, מגלשה וחוף.",
+    facts:[["מה עושים","ימי מלון, יום שייט וקיאקים בפארק הימי אנג תונג, שוק הלילה בבופוט"],["חוף","צ׳ואנג מון: מפרץ שקט ורדוד יחסית"],["אוגוסט","הצד הנכון של תאילנד לחודש הזה. מקלחות קצרות, והים רגוע בעיקר בבוקר"],["חיסרון","עונת מדוזות ארגז (יולי–דצמבר). יעד בינלאומי עם הרבה אירופאים באוגוסט"]],
+    hl:["שייט וקיאקים באנג תונג","ימי מלון: בריכות ומגלשה","שוק הלילה בבופוט (שישי)"]},
+  bangkok:{name:"בנגקוק",type:"base",hotel:"bangkok_hotel",about:"שלושה לילות בסוף, קרוב לשדה. החדר נשאר עד היציאה לטיסה בלילה של 24.8.",
+    facts:[["מה עושים","שוק שהרכבת עוברת בתוכו ושוק צף, KidZania, גשר זכוכית בקומה 78, מופע הערב Siam Niramit"],["אוגוסט","מקלחות אחר הצהריים. חלק מהפעילויות מקורות"],["למה בסוף","כדי שלא תהיה טיסת פנים או סירה ביום של הטיסה הביתה"]],
+    hl:["שוק על פסי רכבת + שוק צף (ראשון)","KidZania · SkyWalk בשקיעה","מופע Siam Niramit"]}
 };
 const MOVES={"airport-pattaya":"סוברנבומי ← פטאיה: ~3–3.5 ש' כולל ביקורת","airport-huahin":"סוברנבומי ← הואה הין: ~4.5–5 ש' כולל ביקורת","airport-khaoyai":"סוברנבומי ← חאו יאי: ~4–4.5 ש' כולל ביקורת",
   "pattaya-khaoyai":"ואן ~3.5–4 ש' (הערכה)","khaoyai-pattaya":"ואן ~3.5–4 ש' (הערכה)","huahin-khaoyai":"ואן ~4.5–5 ש' (הערכה)",
@@ -168,7 +226,7 @@ const ROUTES=[
 ];
 const hasP=(r,p)=>!!r&&r.legs.some(l=>l[0]===p);
 const DECISIONS=[
-  {id:"pattaya_hotel",show:r=>hasP(r,"pattaya"),title:"מלון בפטאיה",why:"החוף בעיר חלש, ולכן המלון והחוף הפרטי שלו הם העיקר.",opts:[
+  {id:"pattaya_hotel",show:r=>hasP(r,"pattaya"),title:"מלון בפטאיה",why:"פטאיה היא בסיס לטיולים, ולכן המלון לא חייב להיות וואו. אבל החוף בעיר חלש, אז כדאי מלון עם חוף פרטי ובריכות טובות.",opts:[
     {id:"ic_pattaya",t:"InterContinental Pattaya",rec:true,lo:350,hi:600,d:"פראטומנאק, חוף פרטי, 3 בריכות + בריכת ילדים, מועדון ילדים. לא מצאתי סימן לעומס ישראלי."},
     {id:"centara_mirage",t:"Centara Grand Mirage",warn:"⚠️ סימן ישראלי",lo:250,hi:400,d:"פארק מים בתוך המלון ונהר עצל. מופיע בהמלצות של \"למטייל\"."}]},
   {id:"huahin_hotel",show:r=>hasP(r,"huahin"),title:"מלון בהואה הין",opts:[
@@ -177,7 +235,7 @@ const DECISIONS=[
   {id:"khaoyai_hotel",show:r=>hasP(r,"khaoyai"),title:"מלון בחאו יאי",why:"12–15.8 הוא סופ\"ש ארוך, ולכן צריך להזמין מוקדם.",opts:[
     {id:"ic_khaoyai",t:"InterContinental Khao Yai",rec:true,lo:450,hi:750,d:"לינה בקרונות רכבת, חדרים מקושרים, מועדון ילדים."},
     {id:"botanica",t:"Botanica Khao Yai",lo:130,hi:220,d:"פארק מים קטן בתוך המלון. פחות מיוחד."}]},
-  {id:"samui_hotel",show:r=>!!r,title:"מלון בסמוי",opts:[
+  {id:"samui_hotel",show:r=>!!r,title:"מלון בסמוי",why:"זה מלון-היעד של הטיול. כאן נמצאים רוב הזמן, ולכן כאן שווה להשקיע.",opts:[
     {id:"kimpton",t:"Kimpton Kitalay",rec:true,lo:600,hi:900,d:"מגלשה, בריכות, מועדון ילדים (4–12), חוף צ'ואנג מון. דירוג כ-9."},
     {id:"melia",t:"Meliá Koh Samui",lo:null,hi:null,d:"אחת הבריכות הגדולות באי, בסגנון לגונה עם מגלשות. המחיר עוד לא נבדק."},
     {id:"fourseasons",t:"Four Seasons Koh Samui",lo:1600,hi:2700,d:"יוקרה גבוהה, וילות עם בריכה פרטית, מועדון ילדים חינם."}]},
@@ -207,14 +265,25 @@ const pickersOf=(key,val)=>Object.entries(votes).filter(([id,v])=>id!==myId&&v.c
 
 function renderPeople(){const ids=Object.keys(votes);$("#people").innerHTML=`<span class="muted">מי בחר:</span> ${ids.length?ids.map(whoTag).join(" "):'<span class="muted">עדיין אף אחד</span>'}`}
 function renderWeights(){$("#weights").innerHTML=CRIT.map(c=>`<div class="w"><label for="w-${c.id}"><span>${c.label}</span><output id="o-${c.id}">${mine.weights[c.id]}</output></label><input type="range" id="w-${c.id}" min="0" max="50" step="5" value="${mine.weights[c.id]}" data-w="${c.id}"></div>`).join("")}
+const TYPES={resort:"🏝️ מלון-יעד",base:"🎒 בסיס לטיולים",mixed:"🌿 משולב"};
+const TYPE_ICON={resort:"🏝️",base:"🎒",mixed:"🌿"};
+const openSet=new Set();
+document.addEventListener("toggle",e=>{const k=e.target?.dataset?.k;if(!k)return;if(e.target.open)openSet.add(k);else openSet.delete(k)},true);
+function balance(r){const b={resort:0,base:0,mixed:0};r.legs.forEach(([p,n])=>{b[PLACES[p].type]+=n});return b}
+function routeDetail(r){let day=8,prev="airport",h="";
+  r.legs.forEach(([p,n])=>{const P=PLACES[p],end=p==="bangkok"?24:day+n;
+    h+=`<div class="move">🚐 ${esc(MOVES[prev+"-"+p]||"")}</div><div class="leg"><div><div class="when">${fmtDay(day)} – ${fmtDay(end)}</div><div class="small muted">${n} לילות</div></div><div class="main"><h3>${P.name} <span class="chip">${TYPES[P.type]}</span></h3><p class="small">${esc(P.about)}</p><ul class="small">${P.facts.map(f=>`<li><b>${esc(f[0])}:</b> ${esc(f[1])}</li>`).join("")}</ul></div></div>`;day+=n;prev=p});
+  return h+`<div class="move">🛫 ${MOVES["bangkok-airport"]}</div>`}
 function renderRoutes(){
-  $("#routes").innerHTML=[...ROUTES].sort((a,b)=>score(b)-score(a)).map(r=>{const sc=score(r),ch=mine.choices.route===r.id,oth=pickersOf("route",r.id);
-    return `<label class="route${ch?" chosen":""}"><input type="radio" name="route" value="${r.id}" id="route-${r.id}" ${ch?"checked":""}>
+  $("#routes").innerHTML=[...ROUTES].sort((a,b)=>score(b)-score(a)).map(r=>{const sc=score(r),ch=mine.choices.route===r.id,oth=pickersOf("route",r.id),b=balance(r),k="r-"+r.id;
+    return `<div class="route${ch?" chosen":""}"><label class="pick"><input type="radio" name="route" value="${r.id}" id="route-${r.id}" ${ch?"checked":""}>
     <div class="main"><h3>מסלול ${r.name} ${r.rec?'<span class="chip rec">ההמלצה שלי</span>':""} ${oth}</h3>
-      <div class="legs">${r.legs.map(([p,n])=>`<span class="chip">${PLACES[p].name} ${n}</span>`).join('<span class="arrow">←</span>')}</div>
+      <div class="legs">${r.legs.map(([p,n])=>`<span class="chip">${TYPE_ICON[PLACES[p].type]} ${PLACES[p].name} ${n}</span>`).join('<span class="arrow">←</span>')}</div>
+      <div class="small"><b>האיזון:</b> ${b.resort} לילות מלון-יעד · ${b.base} לילות בסיס לטיולים${b.mixed?` · ${b.mixed} משולב`:""}</div>
       <div class="small muted">המעבר הארוך ביותר: ${esc(r.longest)}</div>
       <div class="pc"><div class="pro"><div class="h">בעד</div><ul>${r.pros.map(p=>`<li>${esc(p)}</li>`).join("")}</ul></div><div class="con"><div class="h">נגד</div><ul>${r.cons.map(p=>`<li>${esc(p)}</li>`).join("")}</ul></div></div></div>
-    <div class="score"><b>${sc.toFixed(2)}</b><div class="bar"><span style="width:${(sc/5*100).toFixed(0)}%"></span></div></div></label>`}).join("");
+    <div class="score"><b>${sc.toFixed(2)}</b><div class="bar"><span style="width:${(sc/5*100).toFixed(0)}%"></span></div></div></label>
+    <details data-k="${k}" ${openSet.has(k)?"open":""}><summary>פירוט מלא: תאריכים, מעברים ומה יש בכל יעד</summary>${routeDetail(r)}</details></div>`}).join("");
 }
 function renderDecisions(){
   const r=route(mine);
@@ -287,7 +356,7 @@ document.addEventListener("change",e=>{const t=e.target;if(t.type!=="radio")retu
 
 function brief(){
   const lines=["משפחה ישראלית מתכננת טיול לתאילנד: נחיתה בבנגקוק 8.8.2027 12:35, המראה 25.8.2027 01:50. ילדים: 14, 10, 6 (הקטנה לא שוחה לבד). אוהבים חופים, בריכות, אטרקציות, דיסני ומארוול. בררנים באוכל (מעדיפים מערבי). רוצים מלון 'וואו' משפחתי (הרף: JW Marriott Khao Lak ו-Anantara Koh Yao Yai), 4–5 לילות ליעד, לא חוזרים על פוקט/קראבי/קאו לאק/קו יאו יאי, לא מלונות עם עומס ישראלי, פארק מים בלי תורים. כבר עשו: פילים, דולפינריום, אקווריום, אומגות, טרקטורונים, מפלים ומעיינות חמים. 12–15.8 סופ\"ש ארוך בתאילנד.",
-    "מסלולים:",...ROUTES.map(r=>`${r.name}: ${r.legs.map(([p,n])=>PLACES[p].name+" "+n).join(" ← ")} | בעד: ${r.pros.join("; ")} | נגד: ${r.cons.join("; ")}`),
+    "הגדרה שלהם: יש שני סוגי עצירות. מלון-יעד, שבו המלון עצמו הוא החוויה וכמעט לא יוצאים ממנו (שווה להשקיע בו), ובסיס לטיולים, שבו יוצאים כל יום ומספיק מלון טוב. הם רוצים איזון בין השניים. סמוי = מלון-יעד; פטאיה, הואה הין ובנגקוק = בסיס לטיולים; חאו יאי = משולב.","מסלולים:",...ROUTES.map(r=>`${r.name}: ${r.legs.map(([p,n])=>PLACES[p].name+" "+n).join(" ← ")} | בעד: ${r.pros.join("; ")} | נגד: ${r.cons.join("; ")}`),
     "אפשרויות מלון:",...DECISIONS.filter(d=>d.opts).map(d=>`${d.title}: `+d.opts.map(o=>`${o.t}${o.lo!=null&&!o.once?` ($${o.lo}-${o.hi}/לילה)`:""} - ${o.d}`).join(" | ")),
     "הבחירות עד עכשיו:",...Object.entries(votes).map(([id,v])=>`${id===myId?"השואל/ת":"בן/בת הזוג"}: ${JSON.stringify(v.choices||{})} הערות: ${JSON.stringify(v.notes||{})}`)];
   return lines.join("\n");
