@@ -5,4 +5,4 @@
 - [פרופיל משפחה](family-profile.md): מי אנחנו, גילאים, העדפות וכללים
 - **טיולים:**
   - [תאילנד – אוגוסט 2027](trips/2027-08-thailand/README.md)
-  - [סקי – חורף](trips/ski-winter/README.md)
+  - [סקי – חורף 2026-27](trips/2026-27-ski/README.md)
