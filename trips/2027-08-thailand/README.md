@@ -104,16 +104,19 @@
 
 ## 🏨 לינה (מומלץ)
 
+> **דרישת חדרים:** לכל ילד מיטה משלו (או מיטה ענקית אחת לשלושתם), ולהורים חדר נפרד. **בכל ארבעת המלונות ההורים בחדר נפרד.**
 > **מחירים:** בדולר, להערכה בלבד, ללילה לכל המשפחה. אלה לא הצעות זמינות, ולכן חובה לאמת ל-2027.
 
-| יעד | מלון | איך לסדר 5 אנשים | למה | $ ללילה |
-|---|---|---|---|---|
-| הואה הין | **Holiday Inn Vana Nava** | KidSuite עם 3 חדרי שינה, עד 6 אנשים ([רשמי](https://vananavahuahin.holidayinnresorts.com/3-bedroom-kids-suite-ocean-view)) | כניסה ללא הגבלה לפארק המים ([KidSuite](https://vananavahuahin.holidayinnresorts.com/kids-suite)) | 250–450 |
-| סמוי | **Kimpton Kitalay** | 2 חדרים מקושרים | מועדון ילדים לגילאי 4–12, מגלשה, על החוף ([Hotels.com](https://www.hotels.com/ho2290028416/kimpton-kitalay-samui-an-ihg-hotel-koh-samui-thailand/)) | 600–900 |
-| פנגן | **Anantara Rasananda** | וילה משפחתית או 2 וילות (לאמת) | מבודד, מותג אננטרה, דירוג כ-9.3–9.4 ([Booking](https://www.booking.com/hotel/th/rasananda.html), [Oyster](https://www.oyster.com/koh-phangan/hotels/anantara-rasananda-koh-phangan-villas/)) | 700–1,200 |
-| בנגקוק | **Chatrium Riverside** | סוויטה עם 2 חדרי שינה (לאמת לחמישה) | על הנהר, 2 בריכות ילדים ([Little Steps](https://littlestepsasia.com/travel/thailand/bangkok/family-friendly-hotels-bangkok)) | 200–350 |
+| יעד | מלון | סוג חדר | 🛏️ הורים | 🛏️ ילדים | $ ללילה |
+|---|---|---|---|---|---|
+| הואה הין | **Holiday Inn Vana Nava** | **KidSuite עם 3 חדרי שינה**, 91 מ"ר, עד 6 אנשים ([רשמי](https://vananavahuahin.holidayinnresorts.com/3-bedroom-kids-suite-ocean-view)) | חדר עם מיטת קינג ✅ | חדר צוללת עם מיטת קומתיים לנועם ולגלי, וחדר עם 2 מיטות יחיד לשיר. **4 מיטות לשלושה** ✅✅ | 250–450 |
+| סמוי | **Kimpton Kitalay** | **2 חדרים מקושרים** ([Booking](https://suite.booking.com/hotel/th/kimpton-kitalay-samui-an-ihg.en-gb.html)) | חדר עם מיטת קינג ✅ | חדר עם 2 מיטות יחיד ועוד **מיטה נוספת בתשלום** ✅ (לאמת שאפשר מיטה נוספת בחדר עם 2 מיטות יחיד) | 600–900 |
+| פנגן | **Anantara Rasananda** | **וילת בריכה עם 2 חדרי שינה** על 2 קומות, עד 6 מבוגרים ([Anantara](https://www.anantara.com/en/rasananda-koh-phangan/rooms/two-bedroom-pool-villa)) | חדר מאסטר בקומה העליונה ✅ פרטיות מלאה | חדר בקומת הקרקע עם מיטת קינג, **ועוד מיטה נוספת** (לבקש). קינג לשלושה צפוף לשיר בת 14 | 700–1,200 |
+| בנגקוק | **Chatrium Riverside** | **סוויטה עם 2 חדרי שינה, נוף לנהר**, עד 5 אנשים ([רשמי](https://www.chatrium.com/chatriumriversidebangkok/rooms-suites/two-bedroom-suite-river-view), [Expedia](https://expedia.com/Silom-hotels-Chatrium-Hotel-Riverside-Bangkok.h2558980.Hotel-information)) | חדר עם מיטת קינג ✅ | 2 מיטות יחיד ועוד מיטה נוספת ✅ (לאמת) | 200–350 |
 
-**חלופות זולות יותר:** בסמוי Hyatt Regency (280–450), ובבנגקוק דירת שירות עם 2 חדרי שינה (150–250).
+**מה לבקש מכל מלון בכתב לפני ההזמנה:** "Family of 5: kids 14, 10, 6. Each child needs a separate bed (extra/rollaway bed OK). Parents need a separate bedroom."
+
+**חלופות זולות יותר:** בסמוי Hyatt Regency (280–450), ובבנגקוק דירת שירות עם 2 חדרי שינה (150–250). בשתיהן צריך לבדוק את סידור המיטות.
 
 ---
 
