@@ -1,0 +1,272 @@
+<title>החלטות תאילנד 2027</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Rubik:wght@500;700&family=Assistant:wght@400;600;700&display=swap">
+<style>
+/* Layout: one RTL column, decisions as stacked panels; route ranking re-sorts live from weight sliders */
+:root{
+  --bg:#f3f7f7; --surface:#ffffff; --ink:#12313a; --muted:#5b7279; --line:#d6e3e4;
+  --sea:#0d7a83; --sea-soft:#dff0f1; --orchid:#a8336f; --orchid-soft:#f7e3ee;
+  --good:#1d7a46; --warn:#a86400; --bad:#b3261e;
+  --display:"Rubik","Assistant",system-ui,sans-serif; --body:"Assistant","Rubik",system-ui,sans-serif;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#0d1a1d; --surface:#132529; --ink:#e3eef0; --muted:#93aab0; --line:#24393e;
+  --sea:#4cc3cc; --sea-soft:#163a3e; --orchid:#e483b4; --orchid-soft:#3a1d2c;
+  --good:#5cc98a; --warn:#e2a94a; --bad:#f08a82; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0d1a1d; --surface:#132529; --ink:#e3eef0; --muted:#93aab0; --line:#24393e;
+  --sea:#4cc3cc; --sea-soft:#163a3e; --orchid:#e483b4; --orchid-soft:#3a1d2c;
+  --good:#5cc98a; --warn:#e2a94a; --bad:#f08a82; color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.55;direction:rtl;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:20px 60px}
+.wrap{max-width:860px;margin:0 auto;display:flex;flex-direction:column;gap:22px}
+h1,h2,h3{font-family:var(--display);text-wrap:balance;margin:0}
+h1{font-size:1.75rem}
+h2{font-size:1.25rem}
+h3{font-size:1.05rem}
+p{margin:0}
+.muted{color:var(--muted)}
+.small{font-size:.88rem}
+header{display:flex;flex-direction:column;gap:8px}
+.facts{display:flex;flex-wrap:wrap;gap:6px}
+.chip{display:inline-flex;align-items:center;gap:4px;padding:2px 10px;border-radius:999px;background:var(--sea-soft);color:var(--ink);font-size:.85rem;white-space:nowrap}
+.chip.rec{background:var(--orchid);color:#fff;font-weight:700}
+.chip.warn{background:transparent;border:1px solid var(--warn);color:var(--warn)}
+.status{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--bg);padding-block:8px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;align-items:center}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--bg)}
+.progress{display:flex;gap:6px;align-items:center;font-variant-numeric:tabular-nums}
+.dots{display:flex;gap:4px}
+.dot{width:10px;height:10px;border-radius:50%;background:var(--line)}
+.dot.on{background:var(--sea)}
+#saveState{font-size:.85rem;color:var(--muted)}
+section{display:flex;flex-direction:column;gap:12px}
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:16px;display:flex;flex-direction:column;gap:12px}
+.weights{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:10px 18px}
+.w{display:flex;flex-direction:column;gap:2px}
+.w label{display:flex;justify-content:space-between;font-weight:600;font-size:.92rem}
+.w output{font-variant-numeric:tabular-nums;color:var(--sea);font-weight:700}
+input[type=range]{width:100%;accent-color:var(--sea)}
+.routes{display:flex;flex-direction:column;gap:10px}
+.route{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:14px 16px;display:grid;grid-template-columns:auto 1fr auto;gap:6px 14px;align-items:start;cursor:pointer}
+.route:focus-within{outline:2px solid var(--sea);outline-offset:2px}
+.route.chosen{border-color:var(--sea);box-shadow:0 0 0 2px var(--sea) inset}
+.route input{margin-top:5px;accent-color:var(--sea);width:18px;height:18px}
+.route .main{min-width:0;display:flex;flex-direction:column;gap:6px}
+.legs{display:flex;flex-wrap:wrap;gap:4px;align-items:center;font-size:.92rem}
+.legs .arrow{color:var(--muted)}
+.score{text-align:center;min-width:64px}
+.score b{font-family:var(--display);font-size:1.5rem;font-variant-numeric:tabular-nums;display:block}
+.bar{height:6px;border-radius:3px;background:var(--line);overflow:hidden;margin-top:4px}
+.bar span{display:block;height:100%;background:var(--sea)}
+.pc{display:grid;grid-template-columns:1fr 1fr;gap:4px 14px;font-size:.9rem}
+.pc ul{margin:0;padding-inline-start:18px}
+.pc .h{font-weight:700;font-size:.85rem}
+.pro .h{color:var(--good)} .con .h{color:var(--bad)}
+.opts{display:flex;flex-direction:column;gap:8px}
+.opt{display:grid;grid-template-columns:auto 1fr;gap:4px 10px;padding:10px 12px;border:1px solid var(--line);border-radius:10px;cursor:pointer}
+.opt.chosen{border-color:var(--sea);background:var(--sea-soft)}
+.opt input{margin-top:4px;accent-color:var(--sea);width:17px;height:17px}
+.opt .t{display:flex;flex-wrap:wrap;gap:6px;align-items:center;font-weight:700}
+.opt .d{grid-column:2;font-size:.9rem;color:var(--muted)}
+textarea,input[type=number]{width:100%;font:inherit;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:8px 10px}
+textarea{min-height:60px;resize:vertical}
+textarea:focus,input:focus{outline:2px solid var(--sea);outline-offset:1px}
+a{color:var(--sea)}
+.why{font-size:.92rem;color:var(--muted)}
+.cond{font-size:.85rem;color:var(--warn)}
+footer{font-size:.85rem;color:var(--muted)}
+@media (max-width:560px){.pc{grid-template-columns:1fr}.route{grid-template-columns:auto 1fr}.score{grid-column:2;text-align:start;display:flex;gap:10px;align-items:center}.score .bar{flex:1;margin:0}}
+@media (prefers-reduced-motion:no-preference){.bar span{transition:width .3s}}
+</style>
+
+<div class="wrap">
+  <header>
+    <h1>החלטות תאילנד 2027</h1>
+    <p class="muted">בוחרים כאן, אני רואה את הבחירות ומעדכן את התוכנית. בלי שיחה ארוכה.</p>
+    <div class="facts">
+      <span class="chip">✈️ נחיתה 8.8, 12:35</span>
+      <span class="chip">🛫 המראה 25.8, 01:50</span>
+      <span class="chip">16 לילות</span>
+      <span class="chip">שיר 14 · נועם 10 · גלי 6</span>
+      <span class="chip warn">12–15.8 סופ"ש ארוך בתאילנד (יום האם)</span>
+    </div>
+  </header>
+
+  <div class="status">
+    <div class="progress"><span id="progText">0 מתוך 0 החלטות</span><span class="dots" id="dots"></span></div>
+    <span id="saveState" role="status">מתחבר…</span>
+  </div>
+
+  <section aria-labelledby="w-h">
+    <h2 id="w-h">1. מה הכי חשוב לכם?</h2>
+    <p class="why">הזיזו את המשקלות, והדירוג של המסלולים למטה מתעדכן מיד.</p>
+    <div class="panel"><div class="weights" id="weights"></div></div>
+  </section>
+
+  <section aria-labelledby="r-h">
+    <h2 id="r-h">2. בחירת מסלול</h2>
+    <p class="why">הציון הוא 1 עד 5 לכל קריטריון, ומשוקלל לפי מה שבחרתם למעלה.</p>
+    <div class="routes" id="routes"></div>
+    <div class="panel"><label for="note-route" class="small">הערה על המסלול (לא חובה)</label><textarea id="note-route" data-note="route" placeholder="מה חשוב לך שאדע?"></textarea></div>
+  </section>
+
+  <section aria-labelledby="h-h">
+    <h2 id="h-h">3. מלונות ותוספות</h2>
+    <p class="why">מוצגות רק ההחלטות שרלוונטיות למסלול שבחרתם.</p>
+    <div id="decisions" style="display:flex;flex-direction:column;gap:14px"></div>
+  </section>
+
+  <section aria-labelledby="m-h">
+    <h2 id="m-h">4. הודעה אליי</h2>
+    <div class="panel">
+      <label for="note-claude" class="small">שאלות, רעיונות או דברים לבדוק</label>
+      <textarea id="note-claude" data-note="claude" placeholder="לדוגמה: תבדוק אם יש מלון עם פארק מים בסמוי"></textarea>
+      <p class="small muted">אחרי שבחרת, כתבי לי בצ'אט "עדכנתי", ואני אקרא ואעדכן את התוכנית.</p>
+    </div>
+  </section>
+
+  <footer>מחירים הם הערכות בדולר ללילה לכל המשפחה, לא הצעות זמינות. פירוט ומקורות בקובץ route-decision.md בריפו.</footer>
+</div>
+
+<script>
+const CRIT=[
+  {id:"wow",label:"⭐ מלון \"וואו\" משפחתי",w:30},
+  {id:"attr",label:"🎢 אטרקציות חדשות",w:25},
+  {id:"beach",label:"🏝️ חוף ונוף חדש",w:15},
+  {id:"move",label:"🚐 מעברים קצרים",w:15},
+  {id:"price",label:"💰 מחיר",w:10},
+  {id:"isr",label:"🇮🇱 מלון לא \"ישראלי\"",w:5}
+];
+const ROUTES=[
+  {id:"C",name:"ג'",rec:true,legs:["פטאיה 4","חאו יאי 4","סמוי 5","בנגקוק 3"],s:{wow:5,attr:5,beach:4,move:3,price:2,isr:3},
+   longest:"6.5 ש' (חאו יאי ← סמוי)",
+   pros:["פארק מים ביום חול (9–10.8)","יום שלם בקו לארן","3 עולמות: אטרקציות, ג'ונגל, אי"],
+   cons:["החוף בפטאיה עצמה חלש","חאו יאי על הסופ\"ש הארוך: עומס ומחיר"]},
+  {id:"E",name:"ה'",legs:["הואה הין 4","חאו יאי 4","סמוי 5","בנגקוק 3"],s:{wow:5,attr:5,beach:4,move:2,price:2,isr:3},
+   longest:"6.5 ש' + 4.5–5 ש'",
+   pros:["Vana Nava ביום חול","חוף שאפשר לשחות בו","3 עולמות"],
+   cons:["שני ימי מעבר ארוכים","אין קו לארן"]},
+  {id:"D",name:"ד'",legs:["חאו יאי 4","פטאיה 4","סמוי 5","בנגקוק 3"],s:{wow:5,attr:4,beach:4,move:5,price:2,isr:3},
+   longest:"כ-4 ש' (טיסה ישירה מאוטפאו)",
+   pros:["כל המעברים עד 4 שעות","3 עולמות"],
+   cons:["פטאיה ופארק המים בסופ\"ש הארוך: תורים"]},
+  {id:"B",name:"ב'",legs:["פטאיה 4","סמוי 9 (2 מלונות)","בנגקוק 3"],s:{wow:4,attr:4,beach:2,move:5,price:3,isr:3},
+   longest:"כ-4 ש'",pros:["הכי מעט מעברים","קו לארן"],cons:["רק 2 יעדים חדשים","חוף פטאיה חלש"]},
+  {id:"A",name:"א'",legs:["הואה הין 4","סמוי 9 (2 מלונות)","בנגקוק 3"],s:{wow:4,attr:3,beach:3,move:3,price:3,isr:3},
+   longest:"6.5 ש'",pros:["פשוט","Vana Nava ביום חול"],cons:["רק 2 יעדים חדשים","פחות אטרקציות"]}
+];
+const has=(r,place)=>r&&r.legs.some(l=>l.includes(place));
+const DECISIONS=[
+  {id:"pattaya_hotel",show:r=>has(r,"פטאיה"),title:"מלון בפטאיה",why:"החוף בעיר חלש, ולכן המלון והחוף הפרטי שלו מאוד חשובים.",opts:[
+    {id:"ic_pattaya",t:"InterContinental Pattaya",rec:true,d:"פראטומנאק, חוף פרטי, 3 בריכות + בריכת ילדים, מועדון ילדים. דירוג 8.8–9.1. לא מצאתי סימן לעומס ישראלי. כ-$350–600"},
+    {id:"centara_mirage",t:"Centara Grand Mirage",warn:"⚠️ סימן ישראלי",d:"פארק מים בתוך המלון, נהר עצל. מופיע בהמלצות של \"למטייל\". כ-$250–400"}]},
+  {id:"huahin_hotel",show:r=>has(r,"הואה הין"),title:"מלון בהואה הין",opts:[
+    {id:"marriott_hh",t:"Hua Hin Marriott",rec:true,d:"על החוף, 5 בריכות, מגלשה ענקית, בית עץ. לפארק המים בכרטיס יומי. כ-$300–500"},
+    {id:"vana_nava",t:"Holiday Inn Vana Nava",d:"4 כוכבים. כניסה ללא הגבלה לפארק המים, סוויטה עם 3 חדרי שינה. לא על החוף. כ-$250–450"}]},
+  {id:"khaoyai_hotel",show:r=>has(r,"חאו יאי"),title:"מלון בחאו יאי",why:"12–15.8 הוא סופ\"ש ארוך, ולכן צריך להזמין מוקדם.",opts:[
+    {id:"ic_khaoyai",t:"InterContinental Khao Yai",rec:true,d:"לינה בקרונות רכבת, חדרים מקושרים, מועדון ילדים. כ-$450–750 בחג"},
+    {id:"botanica",t:"Botanica Khao Yai",d:"פארק מים קטן בתוך המלון, פחות מיוחד. כ-$130–220"}]},
+  {id:"samui_hotel",show:r=>!!r,title:"מלון בסמוי",why:"במסלולים א' ו-ב' יש 9 לילות בסמוי, ולכן תבחרי גם מלון שני (בהערה).",opts:[
+    {id:"kimpton",t:"Kimpton Kitalay",rec:true,d:"מגלשה, בריכות, מועדון ילדים (4–12), חוף צ'ואנג מון. דירוג כ-9. כ-$600–900"},
+    {id:"melia",t:"Meliá Koh Samui",d:"אחת הבריכות הגדולות באי (לגונה) עם מגלשות, בסגנון JW. מחיר לא נבדק"},
+    {id:"fourseasons",t:"Four Seasons Koh Samui",d:"יוקרה גבוהה, וילות עם בריכה פרטית, מועדון ילדים חינם. כ-$1,600–2,700"}]},
+  {id:"bangkok_hotel",show:r=>!!r,title:"מלון בבנגקוק",opts:[
+    {id:"chatrium",t:"Chatrium Riverside",rec:true,d:"סוויטה עם 2 חדרי שינה על הנהר, 2 בריכות ילדים. כ-$200–350"},
+    {id:"apartment",t:"דירת שירות עם 2 חדרי שינה ליד הרכבת",d:"זול ונוח לתחבורה, פחות חוויה. כ-$150–250"}]},
+  {id:"kohlarn",show:r=>has(r,"פטאיה"),title:"יום בקו לארן",opts:[
+    {id:"private",t:"יום שלם בסירה פרטית",rec:true,d:"קו סאק (שנורקל), חוף טיין, חוף נואל. ג' 10.8, ובוחרים בבוקר לפי מצב הים. כ-1,500–3,500 באט לסירה"},
+    {id:"ferry",t:"מעבורת ציבורית",d:"זול (30 באט לאדם), 45 דק', צפוף יותר"},
+    {id:"skip",t:"לוותר",d:""}]},
+  {id:"budget",show:r=>!!r,title:"תקרת תקציב (בלי טיסות בינלאומיות)",type:"number",why:"ההערכה למסלול המומלץ היא כ-$14,300–22,400. התקרה קובעת את רמת המלונות."}
+];
+
+let state={choices:{},notes:{},weights:Object.fromEntries(CRIT.map(c=>[c.id,c.w]))};
+let db=null, saving=0, timers={};
+const $=s=>document.querySelector(s);
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+
+function score(r){const tot=CRIT.reduce((a,c)=>a+(+state.weights[c.id]||0),0)||1;
+  return CRIT.reduce((a,c)=>a+r.s[c.id]*(+state.weights[c.id]||0),0)/tot;}
+function curRoute(){return ROUTES.find(r=>r.id===state.choices.route)}
+
+function renderWeights(){
+  $("#weights").innerHTML=CRIT.map(c=>`<div class="w"><label for="w-${c.id}"><span>${c.label}</span><output id="o-${c.id}">${state.weights[c.id]}</output></label><input type="range" id="w-${c.id}" min="0" max="50" step="5" value="${state.weights[c.id]}" data-w="${c.id}"></div>`).join("");
+}
+function renderRoutes(){
+  const list=[...ROUTES].sort((a,b)=>score(b)-score(a));
+  $("#routes").innerHTML=list.map(r=>{const sc=score(r),ch=state.choices.route===r.id;
+    return `<label class="route${ch?" chosen":""}"><input type="radio" name="route" value="${r.id}" id="route-${r.id}" ${ch?"checked":""}>
+    <div class="main"><h3>מסלול ${r.name} ${r.rec?'<span class="chip rec">ההמלצה שלי</span>':""}</h3>
+      <div class="legs">${r.legs.map(l=>`<span class="chip">${esc(l)}</span>`).join('<span class="arrow">←</span>')}</div>
+      <div class="small muted">המעבר הארוך ביותר: ${esc(r.longest)}</div>
+      <div class="pc"><div class="pro"><div class="h">בעד</div><ul>${r.pros.map(p=>`<li>${esc(p)}</li>`).join("")}</ul></div>
+      <div class="con"><div class="h">נגד</div><ul>${r.cons.map(p=>`<li>${esc(p)}</li>`).join("")}</ul></div></div></div>
+    <div class="score"><b>${sc.toFixed(2)}</b><div class="bar"><span style="width:${(sc/5*100).toFixed(0)}%"></span></div></div></label>`}).join("");
+}
+function renderDecisions(){
+  const r=curRoute();
+  const vis=DECISIONS.filter(d=>d.show(r));
+  $("#decisions").innerHTML=r?vis.map(d=>{
+    const body=d.type==="number"
+      ?`<label for="budget-input" class="small">דולר</label><input type="number" id="budget-input" min="0" step="500" inputmode="numeric" value="${esc(state.choices.budget||"")}" placeholder="לדוגמה 18000">`
+      :`<div class="opts">${d.opts.map(o=>{const ch=state.choices[d.id]===o.id;return `<label class="opt${ch?" chosen":""}"><input type="radio" name="${d.id}" value="${o.id}" id="${d.id}-${o.id}" ${ch?"checked":""}><span class="t">${esc(o.t)} ${o.rec?'<span class="chip rec">מומלץ</span>':""}${o.warn?`<span class="chip warn">${esc(o.warn)}</span>`:""}</span>${o.d?`<span class="d">${esc(o.d)}</span>`:""}</label>`}).join("")}</div>`;
+    return `<div class="panel"><h3>${esc(d.title)}</h3>${d.why?`<p class="why">${esc(d.why)}</p>`:""}${body}
+      <label for="note-${d.id}" class="small muted">הערה</label><textarea id="note-${d.id}" data-note="${d.id}">${esc(state.notes[d.id]||"")}</textarea></div>`}).join("")
+    :`<div class="panel"><p class="muted">בחרו קודם מסלול בשלב 2, ואז יופיעו כאן ההחלטות שלו.</p></div>`;
+  renderProgress();
+}
+function renderProgress(){
+  const r=curRoute();const vis=["route",...(r?DECISIONS.filter(d=>d.show(r)).map(d=>d.id):[])];
+  const done=vis.filter(id=>state.choices[id]!==undefined&&state.choices[id]!=="").length;
+  $("#progText").textContent=`${done} מתוך ${vis.length} החלטות`;
+  $("#dots").innerHTML=vis.map(id=>`<span class="dot${state.choices[id]?" on":""}"></span>`).join("");
+}
+function fillNotes(){document.querySelectorAll("textarea[data-note]").forEach(t=>{if(document.activeElement!==t)t.value=state.notes[t.dataset.note]||""})}
+function renderAll(){renderRoutes();renderDecisions();fillNotes()}
+
+function setSave(t){$("#saveState").textContent=t}
+function local(){try{localStorage.setItem("th27",JSON.stringify(state))}catch(e){}}
+async function persist(key,body){
+  local();
+  if(!db){setSave("נשמר רק במכשיר הזה");return}
+  saving++;setSave("שומר…");
+  try{await db.doc("decisions/"+key).set({...body,at:new Date().toISOString()});}
+  catch(e){setSave("השמירה נכשלה. נסי שוב");saving--;return}
+  saving--; if(!saving)setSave("נשמר ✓");
+}
+function saveDecision(id){persist(id,{choice:state.choices[id]??null,note:state.notes[id]||""})}
+function later(key,fn,ms){clearTimeout(timers[key]);timers[key]=setTimeout(fn,ms)}
+
+document.addEventListener("input",e=>{
+  const t=e.target;
+  if(t.dataset.w){state.weights[t.dataset.w]=+t.value;$("#o-"+t.dataset.w).textContent=t.value;renderRoutes();
+    later("weights",()=>persist("weights",{weights:state.weights}),700)}
+  else if(t.dataset.note){const k=t.dataset.note;state.notes[k]=t.value;
+    later("n-"+k,()=>k==="claude"?persist("message-to-claude",{note:t.value}):saveDecision(k),900)}
+  else if(t.id==="budget-input"){state.choices.budget=t.value;renderProgress();later("budget",()=>saveDecision("budget"),900)}
+});
+document.addEventListener("change",e=>{
+  const t=e.target;if(t.type!=="radio")return;
+  state.choices[t.name]=t.value;
+  if(t.name==="route"){renderRoutes();renderDecisions();fillNotes()}else{renderDecisions();fillNotes()}
+  saveDecision(t.name);
+});
+
+try{const s=JSON.parse(localStorage.getItem("th27")||"null");if(s)state={...state,...s,weights:{...state.weights,...(s.weights||{})}}}catch(e){}
+renderWeights();renderAll();setSave("מתחבר…");
+
+(async()=>{
+  const timeout=setTimeout(()=>{if(!db)setSave("נשמר רק במכשיר הזה")},10000);
+  try{db=await window.claude?.use?.("db")}catch(e){db=null}
+  if(!db){clearTimeout(timeout);setSave("נשמר רק במכשיר הזה");return}
+  db.collection("decisions").onSnapshot(snap=>{
+    clearTimeout(timeout);
+    snap.docs.forEach(d=>{const v=d.data()||{};
+      if(d.id==="weights"&&v.weights){state.weights={...state.weights,...v.weights}}
+      else if(d.id==="message-to-claude"){state.notes.claude=v.note||""}
+      else{if(v.choice!==undefined&&v.choice!==null)state.choices[d.id]=v.choice;if(typeof v.note==="string")state.notes[d.id]=v.note}});
+    renderWeights();renderAll();if(!saving)setSave("מחובר ✓ הבחירות נשמרות");
+  },()=>{clearTimeout(timeout);setSave("אין חיבור לשמירה. נשמר רק במכשיר הזה")});
+})();
+</script>
